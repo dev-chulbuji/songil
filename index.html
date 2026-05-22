@@ -26,6 +26,7 @@
       --shadow-btn:  0 4px 14px rgba(43,110,68,.25);
     }
 
+    html { overflow-x: hidden; }
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo',
                    'Malgun Gothic', 'Noto Sans KR', sans-serif;
@@ -34,6 +35,7 @@
       min-height: 100vh;
       padding-bottom: 80px;
       -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
     }
 
     /* ── Header ── */
@@ -97,6 +99,7 @@
       box-shadow: var(--shadow);
       padding: 28px 26px;
       display: none;
+      overflow: hidden;
     }
     .s-card.active {
       display: block;
@@ -350,6 +353,35 @@
       line-height: 1.5; white-space: pre-wrap;
     }
 
+    /* ── Required field error state ── */
+    .req-error {
+      border-left: 3px solid var(--red);
+      padding-left: 12px;
+      margin-left: -12px;
+      border-radius: 2px;
+    }
+    .req-error .fg-label,
+    .req-error > label { color: var(--red) !important; }
+    .req-error .ci label { border-color: rgba(220,38,38,.4); }
+    .req-error .fi { border-color: var(--red); }
+
+    /* ── Toast ── */
+    #toast {
+      position: fixed;
+      bottom: 88px; left: 50%;
+      transform: translateX(-50%);
+      background: rgba(220,38,38,.92);
+      color: #fff;
+      padding: 10px 22px;
+      border-radius: 24px;
+      font-size: 14px; font-weight: 600;
+      z-index: 9999;
+      pointer-events: none;
+      opacity: 0; transition: opacity .25s;
+      white-space: nowrap;
+    }
+    #toast.show { opacity: 1; }
+
     /* ── Print ── */
     @media print {
       body { background: white; padding: 0; }
@@ -472,11 +504,11 @@
     </div>
 
     <div class="row">
-      <div class="col" style="flex:2;min-width:160px">
+      <div class="col" style="flex:2">
         <label>내원일자</label>
         <input type="date" name="visitDate" class="fi">
       </div>
-      <div class="col" style="min-width:120px">
+      <div class="col">
         <label>차트번호</label>
         <input type="text" name="chartNo" class="fi" placeholder="(선택)">
       </div>
@@ -485,7 +517,7 @@
     <div class="div"></div>
 
     <div class="row" style="margin-bottom:14px">
-      <div class="col" style="flex:2;min-width:160px">
+      <div class="col" style="flex:2">
         <label>성함</label>
         <input type="text" name="name" class="fi" placeholder="홍길동">
       </div>
@@ -534,7 +566,7 @@
     </div>
 
     <div class="nav">
-      <button class="btn btn-next" onclick="go(2)">다음 →</button>
+      <button class="btn btn-next" onclick="tryGo(2)">다음 →</button>
     </div>
   </div>
 
@@ -567,7 +599,7 @@
 
     <div class="nav">
       <button class="btn btn-prev" onclick="go(1)">← 이전</button>
-      <button class="btn btn-next" onclick="go(3)">다음 →</button>
+      <button class="btn btn-next" onclick="tryGo(3)">다음 →</button>
     </div>
   </div>
 
@@ -615,7 +647,7 @@
 
     <div class="nav">
       <button class="btn btn-prev" onclick="go(2)">← 이전</button>
-      <button class="btn btn-next" onclick="go(4)">다음 →</button>
+      <button class="btn btn-next" onclick="tryGo(4)">다음 →</button>
     </div>
   </div>
 
@@ -663,7 +695,7 @@
 
     <div class="nav">
       <button class="btn btn-prev" onclick="go(3)">← 이전</button>
-      <button class="btn btn-next" onclick="go(5)">다음 →</button>
+      <button class="btn btn-next" onclick="tryGo(5)">다음 →</button>
     </div>
   </div>
 
@@ -712,7 +744,7 @@
 
     <div class="nav">
       <button class="btn btn-prev" onclick="go(4)">← 이전</button>
-      <button class="btn btn-next" onclick="go(6)">다음 →</button>
+      <button class="btn btn-next" onclick="tryGo(6)">다음 →</button>
     </div>
   </div>
 
@@ -759,7 +791,7 @@
 
     <div class="nav">
       <button class="btn btn-prev" onclick="go(5)">← 이전</button>
-      <button class="btn btn-next" onclick="go(7)">다음 →</button>
+      <button class="btn btn-next" onclick="tryGo(7)">다음 →</button>
     </div>
   </div>
 
@@ -805,7 +837,7 @@
 
     <div class="nav">
       <button class="btn btn-prev" onclick="go(6)">← 이전</button>
-      <button class="btn btn-next" onclick="go(8)">다음 →</button>
+      <button class="btn btn-next" onclick="tryGo(8)">다음 →</button>
     </div>
   </div>
 
@@ -881,7 +913,7 @@
 
     <div class="nav">
       <button class="btn btn-prev" onclick="go(7)">← 이전</button>
-      <button class="btn btn-next" onclick="go(9)">다음 →</button>
+      <button class="btn btn-next" onclick="tryGo(9)">다음 →</button>
     </div>
   </div>
 
@@ -928,7 +960,7 @@
 
     <div class="nav">
       <button class="btn btn-prev" onclick="go(8)">← 이전</button>
-      <button class="btn btn-next" onclick="go(10)">다음 →</button>
+      <button class="btn btn-next" onclick="tryGo(10)">다음 →</button>
     </div>
   </div>
 
@@ -1021,7 +1053,7 @@
 
     <div class="nav">
       <button class="btn btn-prev" onclick="go(9)">← 이전</button>
-      <button class="btn btn-next" onclick="genderIsF() ? go(11) : go(12)">다음 →</button>
+      <button class="btn btn-next" onclick="genderIsF() ? tryGo(11) : tryGo(12)">다음 →</button>
     </div>
   </div>
 
@@ -1091,7 +1123,7 @@
 
     <div class="nav">
       <button class="btn btn-prev" onclick="go(10)">← 이전</button>
-      <button class="btn btn-next" onclick="go(12)">다음 →</button>
+      <button class="btn btn-next" onclick="tryGo(12)">다음 →</button>
     </div>
   </div>
 
@@ -1142,7 +1174,7 @@
 
     <div class="nav">
       <button class="btn btn-prev" onclick="genderIsF() ? go(11) : go(10)">← 이전</button>
-      <button class="btn btn-next" onclick="go(13)">다음 →</button>
+      <button class="btn btn-next" onclick="tryGo(13)">다음 →</button>
     </div>
   </div>
 
@@ -1195,6 +1227,8 @@
 
 </div><!-- /wrap -->
 
+<div id="toast"></div>
+
 <script>
   let cur = 1;
   const TOTAL = 13;
@@ -1212,6 +1246,7 @@
 
   /* ── Navigation ── */
   function go(n) {
+    document.querySelectorAll('.req-error').forEach(el => el.classList.remove('req-error'));
     document.querySelectorAll('.s-card').forEach(c => c.classList.remove('active'));
     document.getElementById('resultCard').classList.remove('active');
     const card = document.querySelector(`[data-step="${n}"]`);
@@ -1431,24 +1466,56 @@
   /* 화면 회전 / 리사이즈 대응 */
   window.addEventListener('resize', () => requestAnimationFrame(adaptGrids));
 
-  /* ── Swipe gesture (left = next, right = prev) ── */
-  (function () {
-    let sx = 0, sy = 0;
-    document.addEventListener('touchstart', e => {
-      sx = e.touches[0].clientX;
-      sy = e.touches[0].clientY;
-    }, { passive: true });
-    document.addEventListener('touchend', e => {
-      const dx = e.changedTouches[0].clientX - sx;
-      const dy = e.changedTouches[0].clientY - sy;
-      /* Only horizontal swipes > 60px that aren't mostly vertical */
-      if (Math.abs(dx) < 60 || Math.abs(dy) > Math.abs(dx) * 0.8) return;
-      /* Don't trigger on the result screen */
-      if (document.getElementById('resultCard').classList.contains('active')) return;
-      if (dx < 0 && cur < TOTAL) go(cur + 1);
-      else if (dx > 0 && cur > 1) go(cur - 1);
-    }, { passive: true });
-  })();
+  /* ── Required field validation ── */
+  const REQUIRED = {
+    1:  ['name', 'gender'],
+    2:  ['sx1'],
+    3:  ['slG'],
+    4:  ['meals'],
+    5:  ['bwFreq', 'bs'],
+    6:  ['urD', 'urN'],
+    7:  ['tp'],
+    8:  ['swAmt', 'water', 'wtT'],
+    9:  [],
+    10: ['st'],
+    11: ['mc', 'md', 'mp', 'mr', 'mf', 'mb'],
+    12: ['alcF', 'smk'],
+    13: [],
+  };
+
+  function isFilled(name) {
+    const els = document.querySelectorAll(`[name="${name}"]`);
+    if (!els.length) return true;
+    if (els[0].type === 'radio' || els[0].type === 'checkbox')
+      return !!document.querySelector(`[name="${name}"]:checked`);
+    return els[0].value.trim() !== '';
+  }
+
+  let _toastTimer;
+  function showToast(msg) {
+    const el = document.getElementById('toast');
+    el.textContent = msg;
+    el.classList.add('show');
+    clearTimeout(_toastTimer);
+    _toastTimer = setTimeout(() => el.classList.remove('show'), 2500);
+  }
+
+  function tryGo(target) {
+    document.querySelectorAll('.req-error').forEach(el => el.classList.remove('req-error'));
+    const missing = (REQUIRED[cur] || []).filter(n => !isFilled(n));
+    if (missing.length) {
+      missing.forEach(name => {
+        const el = document.querySelector(`.s-card.active [name="${name}"]`);
+        const container = el?.closest('.fg') || el?.closest('.col');
+        if (container) container.classList.add('req-error');
+      });
+      const first = document.querySelector('.s-card.active .req-error');
+      if (first) first.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      showToast('필수 항목을 모두 선택해주세요');
+      return;
+    }
+    go(target);
+  }
 
 </script>
 </body>
