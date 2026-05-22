@@ -1,0 +1,1415 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>한약 문진표 — 손길한의원</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --green:       #2B6E44;
+      --green-mid:   #3D8A5A;
+      --green-light: #56A872;
+      --green-pale:  #EBF5EF;
+      --green-bg:    #F4FAF6;
+      --border:      #C9E3D3;
+      --text:        #1E2D24;
+      --muted:       #5A7465;
+      --white:       #FFFFFF;
+      --yellow-bg:   #FFFBEB;
+      --yellow-bdr:  #FCD34D;
+      --red:         #DC2626;
+      --radius:      14px;
+      --radius-sm:   9px;
+      --shadow:      0 2px 16px rgba(43,110,68,.08);
+      --shadow-btn:  0 4px 14px rgba(43,110,68,.25);
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo',
+                   'Malgun Gothic', 'Noto Sans KR', sans-serif;
+      background: var(--green-bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding-bottom: 80px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── Header ── */
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 200;
+      background: var(--white);
+      border-bottom: 1.5px solid var(--border);
+      box-shadow: var(--shadow);
+    }
+    .header-inner {
+      max-width: 700px;
+      margin: 0 auto;
+      padding: 14px 20px 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .brand { display: flex; align-items: center; gap: 10px; }
+    .brand-mark {
+      width: 38px; height: 38px;
+      border-radius: 10px;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    .brand-mark img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .brand-text h1 { font-size: 16px; font-weight: 700; color: var(--green); line-height: 1.2; }
+    .brand-text p  { font-size: 11px; color: var(--muted); margin-top: 1px; }
+    .step-badge {
+      font-size: 12px; font-weight: 600;
+      color: var(--green);
+      background: var(--green-pale);
+      padding: 4px 10px; border-radius: 20px;
+      white-space: nowrap;
+    }
+    .progress-rail {
+      height: 4px;
+      background: var(--border);
+      margin-top: 12px;
+    }
+    .progress-fill {
+      height: 100%;
+      background: var(--green);
+      transition: width .4s ease;
+      border-radius: 0 2px 2px 0;
+    }
+
+    /* ── Container ── */
+    .wrap { max-width: 700px; margin: 0 auto; padding: 24px 16px; }
+
+    /* ── Section card ── */
+    .s-card {
+      background: var(--white);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 28px 26px;
+      display: none;
+    }
+    .s-card.active {
+      display: block;
+      animation: rise .28s ease both;
+    }
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: none; }
+    }
+
+    /* ── Section header ── */
+    .s-head {
+      display: flex; align-items: center; gap: 14px;
+      margin-bottom: 26px;
+      padding-bottom: 18px;
+      border-bottom: 2px solid var(--green-pale);
+    }
+    .s-icon {
+      width: 48px; height: 48px;
+      background: var(--green-pale);
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 24px; flex-shrink: 0;
+    }
+    .s-title { font-size: 21px; font-weight: 700; color: var(--green); }
+    .s-sub   { font-size: 13px; color: var(--muted); margin-top: 2px; }
+
+    /* ── Field group ── */
+    .fg { margin-bottom: 22px; }
+    .fg-label {
+      display: block;
+      font-size: 14px; font-weight: 600;
+      color: var(--text);
+      margin-bottom: 10px;
+    }
+    .fg-hint {
+      font-size: 12px; color: var(--muted);
+      margin-top: -6px; margin-bottom: 10px;
+    }
+
+    /* ── Text inputs ── */
+    .fi {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 15px; font-family: inherit;
+      color: var(--text); background: var(--white);
+      outline: none; transition: border-color .18s, box-shadow .18s;
+    }
+    .fi:focus {
+      border-color: var(--green);
+      box-shadow: 0 0 0 3px rgba(43,110,68,.12);
+    }
+    textarea.fi { min-height: 88px; resize: vertical; }
+
+    /* ── Inline number ── */
+    .ni {
+      display: inline-block;
+      width: 72px;
+      padding: 9px 10px;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      font-size: 15px; font-family: inherit;
+      text-align: center; outline: none;
+      transition: border-color .18s, box-shadow .18s;
+    }
+    .ni:focus {
+      border-color: var(--green);
+      box-shadow: 0 0 0 3px rgba(43,110,68,.12);
+    }
+    .it { font-size: 14px; color: var(--text); margin: 0 4px; vertical-align: middle; }
+
+    /* ── Row helpers ── */
+    .row { display: flex; gap: 12px; flex-wrap: wrap; }
+    .row .col { flex: 1; min-width: 120px; }
+    .row .col label { font-size: 12px; color: var(--muted); display: block; margin-bottom: 6px; }
+
+    /* ── Check/radio grid ── */
+    .cg { display: grid; gap: 8px; }
+
+    /* 2가지 선택지: 항상 한 줄 2칸 */
+    .cg-2 { grid-template-columns: 1fr 1fr; }
+
+    /* 3가지 선택지: 1행에 2칸, 마지막 홀수 항목은 전체 폭 */
+    .cg-3 { grid-template-columns: 1fr 1fr; }
+    .cg-3 > .ci:last-child:nth-child(odd) { grid-column: 1 / -1; }
+
+    /* ── Choice item ── */
+    .ci { position: relative; }
+    .ci input[type="checkbox"],
+    .ci input[type="radio"] {
+      position: absolute; opacity: 0; width: 0; height: 0;
+    }
+    .ci label {
+      display: flex; align-items: flex-start; gap: 10px;
+      padding: 12px 14px;
+      background: var(--green-bg);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      font-size: 14px; line-height: 1.45;
+      color: var(--text);
+      transition: border-color .15s, background .15s, color .15s;
+      user-select: none;
+    }
+    .ci label::before {
+      content: '';
+      width: 20px; height: 20px; min-width: 20px;
+      border: 2px solid #B0CFC0;
+      border-radius: 5px;
+      background: white;
+      transition: all .15s;
+      margin-top: 1px;
+    }
+    .ci input[type="radio"] + label::before { border-radius: 50%; }
+    .ci label:hover {
+      border-color: var(--green-light);
+      background: var(--green-pale);
+    }
+    .ci input:checked + label {
+      background: var(--green-pale);
+      border-color: var(--green);
+      color: var(--green);
+      font-weight: 500;
+    }
+    .ci input[type="checkbox"]:checked + label::before {
+      background: var(--green); border-color: var(--green);
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M3 8l3.5 3.5 6.5-7' stroke='white' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round' fill='none'/%3E%3C/svg%3E");
+      background-size: 13px; background-repeat: no-repeat; background-position: center;
+    }
+    .ci input[type="radio"]:checked + label::before {
+      background: white; border: 5px solid var(--green);
+    }
+
+    /* ── No-icon variant: 아이콘 없이 텍스트만 중앙 정렬 (성별 등) ── */
+    .no-icon .ci label {
+      justify-content: center;
+      align-items: center;
+      gap: 0;
+      font-weight: 600;
+      font-size: 15px;
+    }
+    .no-icon .ci label::before { display: none; }
+
+    /* ── Note / hint box ── */
+    .note {
+      background: var(--yellow-bg);
+      border: 1px solid var(--yellow-bdr);
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+      font-size: 13px; color: #78570A;
+      margin-bottom: 14px;
+    }
+
+    /* ── Divider ── */
+    .div { height: 1px; background: var(--border); margin: 22px 0; }
+
+    /* ── Conditional block ── */
+    .conditional {
+      margin-top: 10px;
+      padding: 14px;
+      background: var(--green-bg);
+      border-left: 3px solid var(--green-light);
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      display: none;
+    }
+    .conditional.show { display: block; animation: rise .2s ease; }
+
+    /* ── Nav buttons ── */
+    .nav {
+      display: flex; gap: 10px;
+      margin-top: 28px; padding-top: 20px;
+      border-top: 1px solid var(--border);
+    }
+    .btn {
+      padding: 14px 22px;
+      border: none; border-radius: var(--radius-sm);
+      font-size: 15px; font-weight: 600; font-family: inherit;
+      cursor: pointer; transition: all .18s;
+      display: inline-flex; align-items: center; gap: 6px;
+    }
+    .btn-prev {
+      background: white; border: 1.5px solid var(--border); color: var(--muted);
+    }
+    .btn-prev:hover { border-color: var(--green-light); color: var(--green); }
+    .btn-next {
+      flex: 1; justify-content: center;
+      background: var(--green); color: white;
+    }
+    .btn-next:hover {
+      background: #1F5233;
+      box-shadow: var(--shadow-btn);
+      transform: translateY(-1px);
+    }
+    .btn-print {
+      flex: 1; justify-content: center;
+      background: #1565C0; color: white;
+    }
+    .btn-print:hover { background: #0D47A1; }
+    .btn-edit {
+      background: white; border: 1.5px solid var(--border); color: var(--muted);
+    }
+    .btn-edit:hover { border-color: var(--green-light); color: var(--green); }
+
+    /* ── Result card ── */
+    .result-card {
+      background: var(--white);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 28px 26px;
+      display: none;
+    }
+    .result-card.active { display: block; animation: rise .3s ease; }
+
+    .res-top { text-align: center; margin-bottom: 28px; }
+    .res-circle {
+      width: 68px; height: 68px;
+      background: var(--green-pale);
+      border-radius: 50%;
+      margin: 0 auto 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 34px;
+    }
+    .res-title { font-size: 22px; font-weight: 700; color: var(--green); }
+    .res-sub   { font-size: 13px; color: var(--muted); margin-top: 4px; }
+
+    .res-sec { margin-bottom: 18px; }
+    .res-sec-title {
+      font-size: 13px; font-weight: 700; color: var(--green);
+      background: var(--green-pale);
+      padding: 7px 12px; border-radius: 6px;
+      margin-bottom: 10px;
+    }
+    .res-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 6px; }
+    .res-chip {
+      padding: 5px 11px;
+      background: var(--green-bg);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      font-size: 13px; color: var(--text);
+    }
+    .res-kv { margin-bottom: 8px; }
+    .res-kv-key { font-size: 11px; color: var(--muted); display: block; margin-bottom: 3px; }
+    .res-kv-val {
+      font-size: 14px; color: var(--text);
+      background: var(--green-bg);
+      padding: 8px 12px; border-radius: 6px;
+      line-height: 1.5; white-space: pre-wrap;
+    }
+
+    /* ── Print ── */
+    @media print {
+      body { background: white; padding: 0; }
+      .site-header, .nav, .btn { display: none !important; }
+      .result-card { box-shadow: none; padding: 0; }
+      .result-card.active { display: block !important; }
+      * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 480px) {
+      .s-card, .result-card { padding: 20px 16px; }
+      .wrap { padding: 16px 12px; }
+      .s-title { font-size: 18px; }
+      .s-icon { width: 42px; height: 42px; font-size: 20px; }
+    }
+
+    /* ════════════════════════════════
+       MOBILE ENHANCEMENTS
+    ════════════════════════════════ */
+
+    /* Prevent iOS auto-zoom on input focus (font-size must be ≥ 16px) */
+    input, select, textarea { font-size: 16px; }
+
+    /* Remove native tap highlight; add custom active states */
+    * { -webkit-tap-highlight-color: transparent; }
+    .btn:active        { transform: scale(0.97); opacity: .88; }
+    .ci label:active   { background: var(--green-pale) !important; }
+
+    /* Minimum 48px touch target height for all choice items */
+    .ci label { min-height: 48px; }
+
+    /* ── Step Dots ── */
+    .step-dots {
+      display: flex; justify-content: center; gap: 5px;
+      padding: 7px 16px 10px;
+      overflow-x: auto; scrollbar-width: none; -ms-overflow-style: none;
+    }
+    .step-dots::-webkit-scrollbar { display: none; }
+    .step-dot {
+      width: 8px; height: 8px; border-radius: 4px;
+      background: var(--border); flex-shrink: 0;
+      transition: width .25s, background .25s; cursor: pointer;
+    }
+    .step-dot.active { background: var(--green); width: 22px; }
+    .step-dot.done   { background: var(--green-light); }
+
+    /* ── Stack .row columns on narrow screens ── */
+    @media (max-width: 520px) {
+      .row { flex-direction: column; }
+      .row .col { min-width: 0 !important; flex: 1 1 auto !important; }
+    }
+
+    /* ── Mobile nav: keep in normal flow, make buttons full-width and tall ── */
+    @media (max-width: 640px) {
+      body { padding-bottom: env(safe-area-inset-bottom, 16px); }
+
+      .nav {
+        margin-top: 28px;
+        gap: 8px;
+      }
+      .btn { padding: 16px 18px; font-size: 15px; }
+      .btn-next, .btn-submit { font-size: 16px; }
+    }
+
+    /* ── Safe area for notch / home-bar ── */
+    .site-header {
+      padding-top: env(safe-area-inset-top, 0px);
+    }
+    @media (max-width: 640px) {
+      .header-inner {
+        padding-left:  max(20px, env(safe-area-inset-left));
+        padding-right: max(20px, env(safe-area-inset-right));
+      }
+      .wrap {
+        padding-left:  max(12px, env(safe-area-inset-left));
+        padding-right: max(12px, env(safe-area-inset-right));
+      }
+    }
+
+    /* ── Tighter card padding on very small screens ── */
+    @media (max-width: 360px) {
+      .s-card, .result-card { padding: 16px 12px; }
+      .s-title  { font-size: 17px; }
+      .fg-label { font-size: 13px; }
+      .ci label { font-size: 13px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════ HEADER ══════════════ -->
+<header class="site-header">
+  <div class="header-inner">
+    <div class="brand">
+      <div class="brand-mark"><img src="assets/icon.jpg" alt="손길한의원"></div>
+      <div class="brand-text">
+        <h1>손길한의원</h1>
+        <p>한약 문진표</p>
+      </div>
+    </div>
+    <span class="step-badge" id="stepBadge">1 / 13</span>
+  </div>
+  <div class="progress-rail">
+    <div class="progress-fill" id="progressFill" style="width:0%"></div>
+  </div>
+  <div class="step-dots" id="stepDots"></div>
+</header>
+
+<div class="wrap">
+
+  <!-- ══ STEP 1: 기본 정보 ══ -->
+  <div class="s-card active" data-step="1">
+    <div class="s-head">
+      <div class="s-icon">📋</div>
+      <div>
+        <div class="s-title">기본 정보</div>
+        <div class="s-sub">환자 기본 정보를 입력해주세요</div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col" style="flex:2;min-width:160px">
+        <label>내원일자</label>
+        <input type="date" name="visitDate" class="fi">
+      </div>
+      <div class="col" style="min-width:120px">
+        <label>차트번호</label>
+        <input type="text" name="chartNo" class="fi" placeholder="(선택)">
+      </div>
+    </div>
+
+    <div class="div"></div>
+
+    <div class="row" style="margin-bottom:14px">
+      <div class="col" style="flex:2;min-width:160px">
+        <label>성함</label>
+        <input type="text" name="name" class="fi" placeholder="홍길동">
+      </div>
+      <div class="col" style="min-width:110px">
+        <label>성별</label>
+        <div class="cg cg-2 no-icon">
+          <div class="ci"><input type="radio" id="gM" name="gender" value="남"><label for="gM">남</label></div>
+          <div class="ci"><input type="radio" id="gF" name="gender" value="여"><label for="gF">여</label></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col">
+        <label>생년월일</label>
+        <input type="date" name="birthDate" class="fi">
+      </div>
+      <div class="col">
+        <label>신장</label>
+        <div style="display:flex;align-items:center;gap:6px">
+          <input type="number" name="height" class="fi" placeholder="170" min="100" max="250" style="flex:1;min-width:0;text-align:right">
+          <span class="it" style="flex-shrink:0">cm</span>
+        </div>
+      </div>
+      <div class="col">
+        <label>체중</label>
+        <div style="display:flex;align-items:center;gap:6px">
+          <input type="number" name="weight" class="fi" placeholder="65" min="20" max="200" style="flex:1;min-width:0;text-align:right">
+          <span class="it" style="flex-shrink:0">kg</span>
+        </div>
+      </div>
+      <div class="col">
+        <label>혈압 / 맥박</label>
+        <input type="text" name="bp" class="fi" placeholder="(선택)">
+      </div>
+    </div>
+
+    <div class="nav">
+      <button class="btn btn-next" onclick="go(2)">다음 →</button>
+    </div>
+  </div>
+
+  <!-- ══ STEP 2: 주요 증상 ══ -->
+  <div class="s-card" data-step="2">
+    <div class="s-head">
+      <div class="s-icon">🩺</div>
+      <div>
+        <div class="s-title">주요 증상</div>
+        <div class="s-sub">가장 불편한 증상과 현재 복용 약물을 알려주세요</div>
+      </div>
+    </div>
+
+    <div class="fg">
+      <label class="fg-label">가장 불편한 증상과 앓은 기간</label>
+      <p class="fg-hint">예시: 두통 3년 / 소화불량 6개월</p>
+      <input type="text" name="sx1" class="fi" placeholder="① 주증상과 기간" style="margin-bottom:8px">
+      <input type="text" name="sx2" class="fi" placeholder="② 추가 증상 (해당 시)">
+    </div>
+
+    <div class="fg">
+      <label class="fg-label">현재 복용중인 약물 / 건강식품</label>
+      <textarea name="meds" class="fi" placeholder="없으면 비워두세요"></textarea>
+    </div>
+
+    <div class="fg">
+      <label class="fg-label">현재 혹은 과거에 앓았던 질환이나 수술</label>
+      <textarea name="hx" class="fi" placeholder="없으면 비워두세요"></textarea>
+    </div>
+
+    <div class="nav">
+      <button class="btn btn-prev" onclick="go(1)">← 이전</button>
+      <button class="btn btn-next" onclick="go(3)">다음 →</button>
+    </div>
+  </div>
+
+  <!-- ══ STEP 3: 수면 ══ -->
+  <div class="s-card" data-step="3">
+    <div class="s-head">
+      <div class="s-icon">🌙</div>
+      <div>
+        <div class="s-title">수면</div>
+        <div class="s-sub">해당하는 항목을 선택해주세요</div>
+      </div>
+    </div>
+
+    <div class="fg">
+      <label class="fg-label">전반적인 수면 상태</label>
+      <div class="cg cg-2">
+        <div class="ci"><input type="radio" id="sl1a" name="slG" value="걸핏하면 수면 불량 — 스트레스"><label for="sl1a">걸핏하면 수면상태가 좋지 않아서 스트레스를 받는다</label></div>
+        <div class="ci"><input type="radio" id="sl1b" name="slG" value="평소 수면 문제 없음"><label for="sl1b">평소 수면 문제로 크게 고민하지 않는다</label></div>
+      </div>
+    </div>
+
+    <div class="fg">
+      <label class="fg-label">걱정거리가 있거나 잠자리가 바뀌면</label>
+      <div class="cg cg-2">
+        <div class="ci"><input type="radio" id="sl2a" name="slA" value="30분~1시간 뒤척이다 잠든다"><label for="sl2a">30분~1시간 정도 생각하다가 어쨌든 자기는 잔다</label></div>
+        <div class="ci"><input type="radio" id="sl2b" name="slA" value="2~3시간 이상 뒤척임 / 꼴딱 샘"><label for="sl2b">아니다. 2~3시간 이상 뒤척이거나 거의 꼴딱 샌다</label></div>
+      </div>
+    </div>
+
+    <div class="fg">
+      <label class="fg-label">커피와 수면</label>
+      <div class="cg cg-2">
+        <div class="ci"><input type="radio" id="sl3a" name="slC" value="커피가 수면에 영향 (두근거림·손 떨림)"><label for="sl3a">커피를 마시면 수면에 영향을 준다<br><small style="color:var(--muted)">(두근거림, 손 떨림)</small></label></div>
+        <div class="ci"><input type="radio" id="sl3b" name="slC" value="커피 마셔도 수면 지장 없음"><label for="sl3b">커피를 마셔도 수면에 지장이 없다</label></div>
+      </div>
+    </div>
+
+    <div class="fg">
+      <label class="fg-label">기타 수면 (해당 항목 모두 선택)</label>
+      <div class="cg">
+        <div class="ci"><input type="checkbox" id="sl4" name="slE[]" value="수면제·안정제 복용 경험 있다"><label for="sl4">수면제나 안정제를 복용한 적이 있다</label></div>
+        <div class="ci"><input type="checkbox" id="sl5" name="slE[]" value="일정한 시간에 깨서 늦잠 못 자는 스타일"><label for="sl5">일정한 시간에 깨서 늦잠을 못 자는 스타일이다</label></div>
+      </div>
+    </div>
+
+    <div class="nav">
+      <button class="btn btn-prev" onclick="go(2)">← 이전</button>
+      <button class="btn btn-next" onclick="go(4)">다음 →</button>
+    </div>
+  </div>
+
+  <!-- ══ STEP 4: 소화 ══ -->
+  <div class="s-card" data-step="4">
+    <div class="s-head">
+      <div class="s-icon">🍽️</div>
+      <div>
+        <div class="s-title">소화</div>
+        <div class="s-sub">해당하는 항목을 모두 선택해주세요</div>
+      </div>
+    </div>
+
+    <div class="fg">
+      <label class="fg-label">하루 식사 횟수</label>
+      <div style="display:flex;align-items:center;gap:8px">
+        <span class="it">하루에</span>
+        <input type="number" name="meals" class="ni" min="1" max="6" placeholder="3">
+        <span class="it">끼 먹는다</span>
+      </div>
+    </div>
+
+    <div class="fg">
+      <label class="fg-label">소화가 안될 때 주로 어디가 답답한가요? (복수 선택 가능)</label>
+      <div class="cg cg-3">
+        <div class="ci"><input type="checkbox" id="da1" name="da[]" value="식도(가슴)"><label for="da1">식도 (가슴)</label></div>
+        <div class="ci"><input type="checkbox" id="da2" name="da[]" value="명치(배꼽 위)"><label for="da2">명치 (배꼽 위)</label></div>
+        <div class="ci"><input type="checkbox" id="da3" name="da[]" value="아랫배(배꼽 아래)"><label for="da3">아랫배 (배꼽 아래)</label></div>
+      </div>
+    </div>
+
+    <div class="fg">
+      <label class="fg-label">소화 관련 증상 (해당 항목 모두 선택)</label>
+      <div class="cg">
+        <div class="ci"><input type="checkbox" id="dg1" name="dg[]" value="자주 체한다 — 과식할 때"><label for="dg1">자주 체한다 — 과식할 때</label></div>
+        <div class="ci"><input type="checkbox" id="dg2" name="dg[]" value="자주 체한다 — 예민할 때"><label for="dg2">자주 체한다 — 예민할 때</label></div>
+        <div class="ci"><input type="checkbox" id="dg3" name="dg[]" value="속이 자주 쓰리다"><label for="dg3">속이 자주 쓰리다</label></div>
+        <div class="ci"><input type="checkbox" id="dg4" name="dg[]" value="잘 체하지 않는다"><label for="dg4">잘 체하지 않는다</label></div>
+        <div class="ci"><input type="checkbox" id="dg5" name="dg[]" value="식욕이 없다"><label for="dg5">식욕이 없다</label></div>
+        <div class="ci"><input type="checkbox" id="dg6" name="dg[]" value="트림을 자주한다"><label for="dg6">트림을 자주한다</label></div>
+        <div class="ci"><input type="checkbox" id="dg7" name="dg[]" value="김밥 2줄 이상 먹을 수 있다 (식사량 양호)"><label for="dg7">김밥 2줄 이상 먹을 수 있다 <small style="color:var(--muted)">(식사량 양호)</small></label></div>
+      </div>
+    </div>
+
+    <div class="nav">
+      <button class="btn btn-prev" onclick="go(3)">← 이전</button>
+      <button class="btn btn-next" onclick="go(5)">다음 →</button>
+    </div>
+  </div>
+
+  <!-- ══ STEP 5: 대변 ══ -->
+  <div class="s-card" data-step="5">
+    <div class="s-head">
+      <div class="s-icon">🏥</div>
+      <div>
+        <div class="s-title">대변</div>
+        <div class="s-sub">해당하는 항목을 모두 선택해주세요</div>
+      </div>
+    </div>
+
+    <div class="fg">
+      <label class="fg-label">대변 횟수</label>
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+        <input type="number" name="bwD" class="ni" min="1" placeholder="1">
+        <span class="it">일에</span>
+        <input type="number" name="bwT" class="ni" min="1" placeholder="1">
+        <span class="it">회</span>
+      </div>
+    </div>
+
+    <div class="fg">
+      <label class="fg-label">대변 상태</label>
+      <div class="cg cg-3">
+        <div class="ci"><input type="radio" id="bs1" name="bs" value="딱딱한 편"><label for="bs1">딱딱한 편</label></div>
+        <div class="ci"><input type="radio" id="bs2" name="bs" value="보통"><label for="bs2">보통</label></div>
+        <div class="ci"><input type="radio" id="bs3" name="bs" value="무른 편"><label for="bs3">무른 편</label></div>
+      </div>
+    </div>
+
+    <div class="fg">
+      <label class="fg-label">대변 관련 증상 (해당 항목 모두 선택)</label>
+      <div class="cg">
+        <div class="ci"><input type="checkbox" id="bw1" name="bw[]" value="대변에 별 신경 쓰지 않는다"><label for="bw1">대변에 별 신경 쓰지 않는다</label></div>
+        <div class="ci"><input type="checkbox" id="bw2" name="bw[]" value="하루 대변 못 보면 아주 불편하다"><label for="bw2">하루 대변을 못 보면 아주 불편하다</label></div>
+        <div class="ci"><input type="checkbox" id="bw3" name="bw[]" value="대변 후 잔변감 있다"><label for="bw3">대변을 본 후 잔변감이 있다</label></div>
+        <div class="ci"><input type="checkbox" id="bw4" name="bw[]" value="평소 배에 가스가 많이 찬다"><label for="bw4">평소 배에 가스가 많이 찬다</label></div>
+        <div class="ci"><input type="checkbox" id="bw5" name="bw[]" value="찬·기름진 음식 먹으면 설사"><label for="bw5">찬, 기름진 음식을 먹으면 설사한다</label></div>
+        <div class="ci"><input type="checkbox" id="bw6" name="bw[]" value="매운 음식 먹으면 설사"><label for="bw6">매운 음식을 먹으면 설사한다</label></div>
+        <div class="ci"><input type="checkbox" id="bw7" name="bw[]" value="변비약·개선식품 복용 중"><label for="bw7">변비약/개선식품을 복용 중이다</label></div>
+      </div>
+    </div>
+
+    <div class="nav">
+      <button class="btn btn-prev" onclick="go(4)">← 이전</button>
+      <button class="btn btn-next" onclick="go(6)">다음 →</button>
+    </div>
+  </div>
+
+  <!-- ══ STEP 6: 소변 ══ -->
+  <div class="s-card" data-step="6">
+    <div class="s-head">
+      <div class="s-icon">💧</div>
+      <div>
+        <div class="s-title">소변</div>
+        <div class="s-sub">해당하는 항목을 모두 선택해주세요</div>
+      </div>
+    </div>
+
+    <div class="fg">
+      <label class="fg-label">소변 횟수</label>
+      <div class="note">참고: 깨어있는 낮의 평균 소변 횟수는 6~7회입니다</div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+          <span class="it">깨어있는 낮에 총</span>
+          <input type="number" name="urD" class="ni" min="0" placeholder="6">
+          <span class="it">회</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+          <span class="it">밤에 자다가 일어나서</span>
+          <input type="number" name="urN" class="ni" min="0" placeholder="0">
+          <span class="it">회</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="fg">
+      <label class="fg-label">소변 관련 증상 (해당 항목 모두 선택)</label>
+      <div class="cg">
+        <div class="ci"><input type="checkbox" id="ur1" name="ur[]" value="소변에 아무 불편함 없다"><label for="ur1">소변에 아무 불편함이 없다</label></div>
+        <div class="ci"><input type="checkbox" id="ur2" name="ur[]" value="소변 후 잔뇨감·찝찝함"><label for="ur2">소변 후 잔뇨감이 있고 찝찝하다</label></div>
+        <div class="ci"><input type="checkbox" id="ur3" name="ur[]" value="소변이 잘 안 나와서 힘을 줘야 한다"><label for="ur3">소변이 잘 안 나와서 힘을 줘야 한다</label></div>
+        <div class="ci"><input type="checkbox" id="ur4" name="ur[]" value="방광염이 자주 생긴다"><label for="ur4">방광염이 자주 생긴다</label></div>
+        <div class="ci"><input type="checkbox" id="ur5" name="ur[]" value="배뇨 시 통증 있다"><label for="ur5">배뇨시 통증이 있다</label></div>
+      </div>
+    </div>
+
+    <div class="nav">
+      <button class="btn btn-prev" onclick="go(5)">← 이전</button>
+      <button class="btn btn-next" onclick="go(7)">다음 →</button>
+    </div>
+  </div>
+
+  <!-- ══ STEP 7: 추위/더위 ══ -->
+  <div class="s-card" data-step="7">
+    <div class="s-head">
+      <div class="s-icon">🌡️</div>
+      <div>
+        <div class="s-title">추위 / 더위</div>
+        <div class="s-sub">해당하는 항목을 모두 선택해주세요</div>
+      </div>
+    </div>
+
+    <div class="fg">
+      <label class="fg-label">체감 온도 경향</label>
+      <div class="cg cg-2">
+        <div class="ci"><input type="radio" id="tp1" name="tp" value="추위를 더 탄다"><label for="tp1">추위를 더 탄다</label></div>
+        <div class="ci"><input type="radio" id="tp2" name="tp" value="더위를 더 탄다"><label for="tp2">더위를 더 탄다</label></div>
+      </div>
+    </div>
+
+    <div class="fg">
+      <label class="fg-label">추위 관련 증상 (해당 항목 모두 선택)</label>
+      <div class="cg">
+        <div class="ci"><input type="checkbox" id="cl1" name="cl[]" value="손·발·아랫배가 차다"><label for="cl1">손, 발, 아랫배가 차다</label></div>
+        <div class="ci"><input type="checkbox" id="cl2" name="cl[]" value="따뜻하게 자는 것이 좋다"><label for="cl2">따뜻하게 자는 것이 좋다</label></div>
+        <div class="ci"><input type="checkbox" id="cl3" name="cl[]" value="여름에도 선풍기·에어컨이 싫다"><label for="cl3">여름에도 선풍기나 에어컨이 싫다</label></div>
+        <div class="ci"><input type="checkbox" id="cl4" name="cl[]" value="신체 특정 부위가 얼음장 같다"><label for="cl4">신체 특정 부위가 얼음장 같다</label></div>
+        <div class="ci"><input type="checkbox" id="cl5" name="cl[]" value="수면양말·내복 자주 착용"><label for="cl5">수면양말, 내복을 자주 착용한다</label></div>
+        <div class="ci"><input type="checkbox" id="cl6" name="cl[]" value="평소 냉이 많다"><label for="cl6">평소 냉이 많다</label></div>
+        <div class="ci"><input type="checkbox" id="cl7" name="cl[]" value="성관계 후 하복통·골반통"><label for="cl7">성관계 후 하복통/골반통이 있다</label></div>
+      </div>
+    </div>
+
+    <div class="fg">
+      <label class="fg-label">더위 관련 증상 (해당 항목 모두 선택)</label>
+      <div class="cg">
+        <div class="ci"><input type="checkbox" id="ht1" name="ht[]" value="손·발에 열이 나고 화끈거린다"><label for="ht1">손, 발에 열이 나고 화끈거린다</label></div>
+        <div class="ci"><input type="checkbox" id="ht2" name="ht[]" value="시원하게 자는 것이 좋다"><label for="ht2">시원하게 자는 것이 좋다</label></div>
+        <div class="ci"><input type="checkbox" id="ht3" name="ht[]" value="얼굴이 쉽게 붉어진다 (안면홍조)"><label for="ht3">얼굴이 쉽게 붉어진다 (안면홍조)</label></div>
+      </div>
+    </div>
+
+    <div class="nav">
+      <button class="btn btn-prev" onclick="go(6)">← 이전</button>
+      <button class="btn btn-next" onclick="go(8)">다음 →</button>
+    </div>
+  </div>
+
+  <!-- ══ STEP 8: 땀/부종/음수 ══ -->
+  <div class="s-card" data-step="8">
+    <div class="s-head">
+      <div class="s-icon">💦</div>
+      <div>
+        <div class="s-title">땀 / 부종 / 수분 섭취</div>
+        <div class="s-sub">해당하는 항목을 모두 선택해주세요</div>
+      </div>
+    </div>
+
+    <div class="fg">
+      <label class="fg-label">땀의 양</label>
+      <div class="cg cg-3">
+        <div class="ci"><input type="radio" id="sw1" name="swAmt" value="땀이 많다"><label for="sw1">많다</label></div>
+        <div class="ci"><input type="radio" id="sw2" name="swAmt" value="땀이 보통"><label for="sw2">보통</label></div>
+        <div class="ci"><input type="radio" id="sw3" name="swAmt" value="땀이 적다"><label for="sw3">적다</label></div>
+      </div>
+    </div>
+
+    <div class="fg">
+      <label class="fg-label">땀이 특히 많은 부위 (해당 항목 모두 선택)</label>
+      <div class="cg cg-2">
+        <div class="ci"><input type="checkbox" id="sa1" name="sa[]" value="손·발"><label for="sa1">손, 발</label></div>
+        <div class="ci"><input type="checkbox" id="sa2" name="sa[]" value="머리·얼굴"><label for="sa2">머리, 얼굴</label></div>
+        <div class="ci"><input type="checkbox" id="sa3" name="sa[]" value="상체"><label for="sa3">상체</label></div>
+        <div class="ci"><input type="checkbox" id="sa4" name="sa[]" value="하체·사타구니"><label for="sa4">하체, 사타구니</label></div>
+      </div>
+    </div>
+
+    <div class="fg">
+      <label class="fg-label">땀·부종 관련 증상 (해당 항목 모두 선택)</label>
+      <div class="cg">
+        <div class="ci"><input type="checkbox" id="se1" name="se[]" value="땀 빼고 나면 나른하고 지친다"><label for="se1">땀을 빼고 나면 나른하고 지친다</label></div>
+        <div class="ci"><input type="checkbox" id="se2" name="se[]" value="땀 빼고 나면 몸이 개운하다"><label for="se2">땀을 빼고 나면 몸이 개운하다</label></div>
+        <div class="ci"><input type="checkbox" id="se3" name="se[]" value="발이 부어서 양말자국 자주 생긴다"><label for="se3">발이 부어서 양말자국이 자주 생긴다</label></div>
+        <div class="ci"><input type="checkbox" id="se4" name="se[]" value="평소 잘 붓는다"><label for="se4">평소 잘 붓는다</label></div>
+        <div class="ci"><input type="checkbox" id="se5" name="se[]" value="몸이 잘 붓지 않는다"><label for="se5">몸이 잘 붓지 않는다</label></div>
+        <div class="ci"><input type="checkbox" id="se6" name="se[]" value="사우나를 좋아한다"><label for="se6">사우나를 좋아한다</label></div>
+      </div>
+    </div>
+
+    <div class="div"></div>
+
+    <div class="fg">
+      <label class="fg-label">하루 음수량 (물 + 음료 + 커피 합계)</label>
+      <div style="display:flex;align-items:center;gap:8px">
+        <span class="it">대략</span>
+        <input type="number" name="water" class="ni" step="0.1" min="0" placeholder="1.5">
+        <span class="it">리터</span>
+      </div>
+    </div>
+
+    <div class="fg">
+      <label class="fg-label">음수 관련 증상 (해당 항목 모두 선택)</label>
+      <div class="cg">
+        <div class="ci"><input type="checkbox" id="wt1" name="wt[]" value="입술·피부 건조 증상이 심하다"><label for="wt1">입술/피부의 건조 증상이 심하다</label></div>
+        <div class="ci"><input type="checkbox" id="wt2" name="wt[]" value="비정상적인 갈증이 있다"><label for="wt2">비정상적인 갈증이 있다</label></div>
+      </div>
+    </div>
+
+    <div class="fg">
+      <label class="fg-label">좋아하는 물 온도</label>
+      <div class="cg cg-2">
+        <div class="ci"><input type="radio" id="wt3" name="wtT" value="찬물을 좋아한다"><label for="wt3">찬물</label></div>
+        <div class="ci"><input type="radio" id="wt4" name="wtT" value="따뜻한 물을 좋아한다"><label for="wt4">따뜻한 물</label></div>
+      </div>
+    </div>
+
+    <div class="nav">
+      <button class="btn btn-prev" onclick="go(7)">← 이전</button>
+      <button class="btn btn-next" onclick="go(9)">다음 →</button>
+    </div>
+  </div>
+
+  <!-- ══ STEP 9: 흉부/두면 ══ -->
+  <div class="s-card" data-step="9">
+    <div class="s-head">
+      <div class="s-icon">❤️</div>
+      <div>
+        <div class="s-title">흉부 / 두면</div>
+        <div class="s-sub">해당하는 항목을 모두 선택해주세요</div>
+      </div>
+    </div>
+
+    <div class="fg">
+      <label class="fg-label">흉부 증상 (해당 항목 모두 선택)</label>
+      <div class="cg">
+        <div class="ci"><input type="checkbox" id="ch1" name="ch[]" value="가슴이 자주 두근거린다"><label for="ch1">가슴이 자주 두근거린다</label></div>
+        <div class="ci"><input type="checkbox" id="ch2" name="ch[]" value="가슴이 뻐근하거나 통증이 있다"><label for="ch2">가슴이 뻐근하거나 통증이 있다</label></div>
+        <div class="ci"><input type="checkbox" id="ch3" name="ch[]" value="가슴이 자주 답답하다"><label for="ch3">가슴이 자주 답답하다</label></div>
+        <div class="ci"><input type="checkbox" id="ch4" name="ch[]" value="조금만 움직여도 숨이 차다"><label for="ch4">조금만 움직여도 숨이 차다</label></div>
+        <div class="ci"><input type="checkbox" id="ch5" name="ch[]" value="숨이 안쉬어질 때가 있다"><label for="ch5">숨이 안쉬어질 때가 있다</label></div>
+        <div class="ci"><input type="checkbox" id="ch6" name="ch[]" value="누워있을 때 증상이 심하다"><label for="ch6">누워있을 때 증상이 심하다</label></div>
+      </div>
+    </div>
+
+    <div class="div"></div>
+
+    <div class="fg">
+      <label class="fg-label">두면 증상 (해당 항목 모두 선택)</label>
+      <div class="cg">
+        <div class="ci"><input type="checkbox" id="hd1" name="hd[]" value="빈혈 진단 받음 (혈액검사)"><label for="hd1">혈액검사에서 빈혈이 있다고 한다</label></div>
+        <div class="ci"><input type="checkbox" id="hd2" name="hd[]" value="머리가 자주 아프다"><label for="hd2">머리가 자주 아프다</label></div>
+        <div class="ci"><input type="checkbox" id="hd3" name="hd[]" value="가래 걸린 듯 한 이물감이 있다"><label for="hd3">가래가 걸린 듯 한 이물감이 있다</label></div>
+        <div class="ci"><input type="checkbox" id="hd4" name="hd[]" value="흠흠거리는 잔기침을 많이 한다"><label for="hd4">흠흠거리는 잔기침을 많이 한다</label></div>
+        <div class="ci" id="dizzyItem">
+          <input type="checkbox" id="hd5" name="hd[]" value="자주 어지럽다">
+          <label for="hd5">자주 어지럽다</label>
+        </div>
+        <div class="conditional" id="dizzyWhen">
+          <input type="text" name="dizzyWhen" class="fi" placeholder="언제 어지러운가요? (예: 일어날 때, 오래 서 있을 때)">
+        </div>
+      </div>
+    </div>
+
+    <div class="nav">
+      <button class="btn btn-prev" onclick="go(8)">← 이전</button>
+      <button class="btn btn-next" onclick="go(10)">다음 →</button>
+    </div>
+  </div>
+
+  <!-- ══ STEP 10: 전신/감기·비염 ══ -->
+  <div class="s-card" data-step="10">
+    <div class="s-head">
+      <div class="s-icon">🤧</div>
+      <div>
+        <div class="s-title">전신 / 감기·비염</div>
+        <div class="s-sub">해당하는 항목을 모두 선택해주세요</div>
+      </div>
+    </div>
+
+    <div class="fg">
+      <label class="fg-label">성격 (해당 항목 모두 선택)</label>
+      <div class="cg cg-3">
+        <div class="ci"><input type="checkbox" id="pe1" name="pe[]" value="급하다"><label for="pe1">급하다</label></div>
+        <div class="ci"><input type="checkbox" id="pe2" name="pe[]" value="화가 많다"><label for="pe2">화가 많다</label></div>
+        <div class="ci"><input type="checkbox" id="pe3" name="pe[]" value="느긋하다"><label for="pe3">느긋하다</label></div>
+        <div class="ci"><input type="checkbox" id="pe4" name="pe[]" value="차분하다"><label for="pe4">차분하다</label></div>
+        <div class="ci"><input type="checkbox" id="pe5" name="pe[]" value="우울하다"><label for="pe5">우울하다</label></div>
+        <div class="ci"><input type="checkbox" id="pe6" name="pe[]" value="걱정이 많다"><label for="pe6">걱정이 많다</label></div>
+      </div>
+    </div>
+
+    <div class="fg">
+      <label class="fg-label">체력</label>
+      <div class="cg cg-3">
+        <div class="ci"><input type="radio" id="st1" name="st" value="체력이 좋은 편"><label for="st1">좋은 편</label></div>
+        <div class="ci"><input type="radio" id="st2" name="st" value="체력이 보통"><label for="st2">보통</label></div>
+        <div class="ci"><input type="radio" id="st3" name="st" value="체력이 나쁜 편"><label for="st3">나쁜 편</label></div>
+      </div>
+    </div>
+
+    <div class="fg">
+      <label class="fg-label">전신 증상 (해당 항목 모두 선택)</label>
+      <div class="cg">
+        <div class="ci"><input type="checkbox" id="bd1" name="bd[]" value="피부를 긁으면 쉽게 부풀어 오른다"><label for="bd1">피부를 긁으면 쉽게 부풀어 오른다</label></div>
+        <div class="ci"><input type="checkbox" id="bd2" name="bd[]" value="걸핏하면 멍이 잘 들고 오래간다"><label for="bd2">걸핏하면 멍이 잘 들고 오래간다</label></div>
+        <div class="ci"><input type="checkbox" id="bd3" name="bd[]" value="손·발에 쥐·경련이 자주 일어난다"><label for="bd3">손, 발에 쥐/경련이 자주 일어난다</label></div>
+        <div class="ci"><input type="checkbox" id="bd4" name="bd[]" value="피곤하면 근육통·몸살이 잘 생긴다"><label for="bd4">피곤하면 근육통/몸살이 잘 생긴다</label></div>
+      </div>
+    </div>
+
+    <div class="div"></div>
+
+    <div class="fg">
+      <label class="fg-label">감기 걸릴 시 주로 나타나는 증상 (해당 항목 모두 선택)</label>
+      <div class="cg cg-3">
+        <div class="ci"><input type="checkbox" id="cs1" name="cs[]" value="목감기"><label for="cs1">목감기</label></div>
+        <div class="ci"><input type="checkbox" id="cs2" name="cs[]" value="열감기"><label for="cs2">열감기</label></div>
+        <div class="ci"><input type="checkbox" id="cs3" name="cs[]" value="몸살감기"><label for="cs3">몸살감기</label></div>
+        <div class="ci"><input type="checkbox" id="cs4" name="cs[]" value="코감기"><label for="cs4">코감기</label></div>
+        <div class="ci"><input type="checkbox" id="cs5" name="cs[]" value="기침감기"><label for="cs5">기침감기</label></div>
+      </div>
+    </div>
+
+    <div class="fg">
+      <label class="fg-label">기타 감기·비염 (해당 항목 선택)</label>
+      <div class="cg">
+        <div class="ci"><input type="checkbox" id="cf1" name="cf[]" value="감기가 오면 목부터 온다"><label for="cf1">감기가 오면 목부터 온다</label></div>
+        <div class="ci" id="rhinItem">
+          <input type="checkbox" id="cf2" name="cf[]" value="비염이 있다">
+          <label for="cf2">비염이 있다</label>
+        </div>
+      </div>
+
+      <div class="conditional" id="rhinDetails">
+        <div class="fg" style="margin-bottom:14px">
+          <label class="fg-label" style="font-size:13px">비염 증상 (해당 항목 모두 선택)</label>
+          <div class="cg cg-3">
+            <div class="ci"><input type="checkbox" id="rh1" name="rh[]" value="맑은 콧물"><label for="rh1">맑은 콧물</label></div>
+            <div class="ci"><input type="checkbox" id="rh2" name="rh[]" value="누런 콧물"><label for="rh2">누런 콧물</label></div>
+            <div class="ci"><input type="checkbox" id="rh3" name="rh[]" value="코 막힘"><label for="rh3">코 막힘</label></div>
+            <div class="ci"><input type="checkbox" id="rh4" name="rh[]" value="재채기"><label for="rh4">재채기</label></div>
+            <div class="ci"><input type="checkbox" id="rh5" name="rh[]" value="가려움"><label for="rh5">가려움</label></div>
+          </div>
+        </div>
+        <div class="fg" style="margin-bottom:0">
+          <label class="fg-label" style="font-size:13px">비염 발생 시기</label>
+          <div class="cg cg-2">
+            <div class="ci"><input type="radio" id="rt1" name="rt" value="환절기에만"><label for="rt1">환절기에만</label></div>
+            <div class="ci"><input type="radio" id="rt2" name="rt" value="사계절 내내"><label for="rt2">사계절 내내</label></div>
+            <div class="ci"><input type="radio" id="rt3" name="rt" value="온도에 따라 달라진다"><label for="rt3">온도에 따라 달라진다</label></div>
+            <div class="ci"><input type="radio" id="rt4" name="rt" value="온도에 영향 받지 않는다"><label for="rt4">온도에 영향 받지 않는다</label></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav">
+      <button class="btn btn-prev" onclick="go(9)">← 이전</button>
+      <button class="btn btn-next" onclick="genderIsF() ? go(11) : go(12)">다음 →</button>
+    </div>
+  </div>
+
+  <!-- ══ STEP 11: 부녀 ══ -->
+  <div class="s-card" data-step="11">
+    <div class="s-head">
+      <div class="s-icon">🌸</div>
+      <div>
+        <div class="s-title">부녀 (여성 건강)</div>
+        <div class="s-sub">여성 환자분께만 표시됩니다</div>
+      </div>
+    </div>
+
+    <div class="row" style="margin-bottom:20px">
+      <div class="col">
+        <label>생리 주기</label>
+        <div style="display:flex;align-items:center;gap:6px;margin-top:6px">
+          <input type="number" name="mc" class="ni" placeholder="28">
+          <span class="it">일</span>
+        </div>
+      </div>
+      <div class="col">
+        <label>평균 생리 기간</label>
+        <div style="display:flex;align-items:center;gap:6px;margin-top:6px">
+          <input type="number" name="md" class="ni" placeholder="5">
+          <span class="it">일</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="fg">
+      <label class="fg-label">생리통</label>
+      <div class="cg cg-2">
+        <div class="ci"><input type="radio" id="mp1" name="mp" value="생리통 보통"><label for="mp1">보통이다</label></div>
+        <div class="ci"><input type="radio" id="mp2" name="mp" value="생리통 심하다"><label for="mp2">심하다</label></div>
+      </div>
+    </div>
+
+    <div class="fg">
+      <label class="fg-label">생리 주기 규칙성</label>
+      <div class="cg cg-2">
+        <div class="ci"><input type="radio" id="mr1" name="mr" value="생리 주기 규칙적"><label for="mr1">규칙적이다</label></div>
+        <div class="ci"><input type="radio" id="mr2" name="mr" value="생리 주기 불규칙적"><label for="mr2">불규칙적이다</label></div>
+      </div>
+    </div>
+
+    <div class="fg">
+      <label class="fg-label">생리량</label>
+      <div class="cg cg-3">
+        <div class="ci"><input type="radio" id="mf1" name="mf" value="생리량 적다"><label for="mf1">적다</label></div>
+        <div class="ci"><input type="radio" id="mf2" name="mf" value="생리량 보통"><label for="mf2">보통이다</label></div>
+        <div class="ci"><input type="radio" id="mf3" name="mf" value="생리량 많다"><label for="mf3">많다</label></div>
+      </div>
+    </div>
+
+    <div class="fg">
+      <label class="fg-label">생리혈 상태</label>
+      <div class="cg cg-3">
+        <div class="ci"><input type="radio" id="mb1" name="mb" value="생리혈 맑다"><label for="mb1">맑다</label></div>
+        <div class="ci"><input type="radio" id="mb2" name="mb" value="생리혈 검다"><label for="mb2">검다</label></div>
+        <div class="ci"><input type="radio" id="mb3" name="mb" value="생리혈 덩어리진다"><label for="mb3">덩어리진다</label></div>
+      </div>
+    </div>
+
+    <div class="nav">
+      <button class="btn btn-prev" onclick="go(10)">← 이전</button>
+      <button class="btn btn-next" onclick="go(12)">다음 →</button>
+    </div>
+  </div>
+
+  <!-- ══ STEP 12: 기호 ══ -->
+  <div class="s-card" data-step="12">
+    <div class="s-head">
+      <div class="s-icon">🍺</div>
+      <div>
+        <div class="s-title">기호 (생활 습관)</div>
+        <div class="s-sub">음주·흡연 습관을 알려주세요</div>
+      </div>
+    </div>
+
+    <div class="fg">
+      <label class="fg-label">음주 횟수</label>
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px">
+        <span class="it">1주일에</span>
+        <input type="number" name="alcF" class="ni" min="0" placeholder="0">
+        <span class="it">번</span>
+      </div>
+      <div class="cg cg-2">
+        <div class="ci"><input type="radio" id="al1" name="alcA" value="많이 마신다"><label for="al1">많이 마신다</label></div>
+        <div class="ci"><input type="radio" id="al2" name="alcA" value="조금 마신다"><label for="al2">조금 마신다</label></div>
+      </div>
+    </div>
+
+    <div class="fg">
+      <label class="fg-label">흡연</label>
+      <div style="display:flex;align-items:center;gap:8px">
+        <span class="it">하루에</span>
+        <input type="number" name="smk" class="ni" step="0.5" min="0" placeholder="0">
+        <span class="it">갑 (비흡연 0)</span>
+      </div>
+    </div>
+
+    <div class="fg">
+      <label class="fg-label">음주 관련 반응 (해당 항목 모두 선택)</label>
+      <div class="cg">
+        <div class="ci"><input type="checkbox" id="ar1" name="ar[]" value="술을 조금 마셔도 얼굴이 붉어진다"><label for="ar1">술을 조금 마셔도 얼굴이 붉어진다</label></div>
+        <div class="ci"><input type="checkbox" id="ar2" name="ar[]" value="술을 마시면 피부에 반점이 생긴다"><label for="ar2">술을 마시면 피부에 반점이 생긴다</label></div>
+        <div class="ci"><input type="checkbox" id="ar3" name="ar[]" value="(B형·C형) 간염 환자(보균자)"><label for="ar3">(B형, C형) 간염 환자(보균자)이다</label></div>
+      </div>
+    </div>
+
+    <div class="nav">
+      <button class="btn btn-prev" onclick="genderIsF() ? go(11) : go(10)">← 이전</button>
+      <button class="btn btn-next" onclick="go(13)">다음 →</button>
+    </div>
+  </div>
+
+  <!-- ══ STEP 13: 추가 정보 ══ -->
+  <div class="s-card" data-step="13">
+    <div class="s-head">
+      <div class="s-icon">📝</div>
+      <div>
+        <div class="s-title">추가 정보</div>
+        <div class="s-sub">마지막 단계입니다. 추가로 알려주실 내용을 적어주세요</div>
+      </div>
+    </div>
+
+    <div class="fg">
+      <label class="fg-label">평소 몸 상태가 나빠질 때 나타나는 증상</label>
+      <p class="fg-hint">예시: 체하고 머리가 아프다 / 식은땀이 나고 몸살기운이 생긴다</p>
+      <textarea name="worse" class="fi" placeholder="잠을 못 자거나, 스트레스를 많이 받거나, 과로 후 나타나는 증상을 적어주세요"></textarea>
+    </div>
+
+    <div class="fg">
+      <label class="fg-label">하루 컨디션을 좌우하는 가장 중요한 요소</label>
+      <p class="fg-hint">예시: 대변만 잘 보면 컨디션이 좋다 / 잠만 잘 자면 문제없다</p>
+      <textarea name="factor" class="fi" placeholder="본인의 컨디션을 좌우하는 가장 중요한 요소를 적어주세요"></textarea>
+    </div>
+
+    <div class="fg">
+      <label class="fg-label">특이하거나 알아주었으면 하는 증상</label>
+      <textarea name="extra" class="fi" placeholder="그 밖에 특이하거나 원장님께 알려드리고 싶은 증상을 자유롭게 적어주세요"></textarea>
+    </div>
+
+    <div class="nav">
+      <button class="btn btn-prev" onclick="go(12)">← 이전</button>
+      <button class="btn btn-next" onclick="finish()" style="background:var(--green)">완료 →</button>
+    </div>
+  </div>
+
+  <!-- ══ RESULT ══ -->
+  <div class="result-card" id="resultCard">
+    <div class="res-top">
+      <div class="res-circle">✓</div>
+      <div class="res-title">문진표 작성 완료</div>
+      <div class="res-sub">작성하신 내용을 확인하고 인쇄하거나 저장해주세요<br>정직한 진료로 따뜻한 손길이 되어 드리겠습니다</div>
+    </div>
+    <div id="summary"></div>
+    <div class="nav" style="flex-wrap:wrap">
+      <button class="btn btn-edit" onclick="go(1)">← 처음으로</button>
+      <button class="btn btn-print" onclick="window.print()">🖨️ 인쇄하기</button>
+    </div>
+  </div>
+
+</div><!-- /wrap -->
+
+<script>
+  let cur = 1;
+  const TOTAL = 13;
+
+  /* ── Helpers ── */
+  function genderIsF() {
+    return document.querySelector('input[name=gender]:checked')?.value === '여';
+  }
+
+  /* ── Navigation ── */
+  function go(n) {
+    document.querySelectorAll('.s-card').forEach(c => c.classList.remove('active'));
+    document.getElementById('resultCard').classList.remove('active');
+    const card = document.querySelector(`[data-step="${n}"]`);
+    if (card) {
+      card.classList.add('active');
+      cur = n;
+      updateProgress();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      /* 두 번째 프레임에서 측정: 카드가 렌더된 뒤 그리드 레이아웃 조정 */
+      requestAnimationFrame(() => requestAnimationFrame(adaptGrids));
+    }
+  }
+
+  /* ── .cg-2 그리드: 레이블이 2줄 이상이면 단일 컬럼으로 전환 ── */
+  function adaptGrids() {
+    const card = document.querySelector('.s-card.active');
+    if (!card) return;
+    card.querySelectorAll('.cg-2').forEach(grid => {
+      /* 먼저 2칸으로 리셋해 자연 높이를 측정 */
+      grid.style.gridTemplateColumns = '';
+      /* 한 프레임 뒤 실제 높이 측정 */
+      requestAnimationFrame(() => {
+        const maxH = Math.max(
+          ...Array.from(grid.querySelectorAll('label')).map(l => l.offsetHeight)
+        );
+        /*
+          단일 라인 레이블: 폰트(20px) + 상하패딩(24px) = 44px → min-height 48px 적용
+          2줄 레이블: (20px × 2) + 24px = 64px
+          임계값 54px: 2줄 여부를 정확히 구분
+        */
+        grid.style.gridTemplateColumns = maxH > 54 ? '1fr' : '';
+      });
+    });
+  }
+
+  function updateProgress() {
+    const pct = Math.round(((cur - 1) / TOTAL) * 100);
+    document.getElementById('progressFill').style.width = pct + '%';
+    document.getElementById('stepBadge').textContent = cur + ' / ' + TOTAL;
+    renderDots();
+  }
+
+  /* ── Step dots ── */
+  function renderDots() {
+    const el = document.getElementById('stepDots');
+    if (!el) return;
+    el.innerHTML = Array.from({ length: TOTAL }, (_, i) => {
+      const n = i + 1;
+      const cls = n === cur ? 'active' : n < cur ? 'done' : '';
+      return `<span class="step-dot ${cls}" onclick="go(${n})" title="${n}단계"></span>`;
+    }).join('');
+    /* Auto-scroll dots so active dot is visible */
+    const active = el.querySelector('.step-dot.active');
+    if (active) active.scrollIntoView({ inline: 'center', block: 'nearest' });
+  }
+
+  /* ── Conditional toggles ── */
+  document.getElementById('hd5').addEventListener('change', function () {
+    document.getElementById('dizzyWhen').classList.toggle('show', this.checked);
+  });
+  document.getElementById('cf2').addEventListener('change', function () {
+    document.getElementById('rhinDetails').classList.toggle('show', this.checked);
+  });
+
+  /* ── Collect form data ── */
+  function collect() {
+    const d = {};
+    document.querySelectorAll('input[type=text], input[type=date], input[type=number], textarea').forEach(el => {
+      if (el.name && el.value.trim()) d[el.name] = el.value.trim();
+    });
+    document.querySelectorAll('input[type=radio]:checked').forEach(el => {
+      d[el.name] = el.value;
+    });
+    document.querySelectorAll('input[type=checkbox]:checked').forEach(el => {
+      if (!d[el.name]) d[el.name] = [];
+      d[el.name].push(el.value);
+    });
+    return d;
+  }
+
+  /* ── Section schema ── */
+  const SECTIONS = [
+    { title: '기본 정보', keys: [
+      { k: 'visitDate', label: '내원일자' },
+      { k: 'chartNo',   label: '차트번호' },
+      { k: 'name',      label: '성함' },
+      { k: 'gender',    label: '성별' },
+      { k: 'birthDate', label: '생년월일' },
+      { k: 'height',    label: '신장 (cm)' },
+      { k: 'weight',    label: '체중 (kg)' },
+      { k: 'bp',        label: '혈압/맥박' },
+    ]},
+    { title: '주요 증상', keys: [
+      { k: 'sx1',   label: '주증상 ①' },
+      { k: 'sx2',   label: '주증상 ②' },
+      { k: 'meds',  label: '복용 약물/건강식품' },
+      { k: 'hx',    label: '과거 질환/수술' },
+    ]},
+    { title: '수면', keys: [
+      { k: 'slG',   label: '전반적 수면 상태' },
+      { k: 'slA',   label: '걱정 시 수면' },
+      { k: 'slC',   label: '커피와 수면' },
+      { k: 'slE[]', label: '기타 수면', chips: true },
+    ]},
+    { title: '소화', keys: [
+      { k: 'meals', label: '하루 식사 (끼)' },
+      { k: 'da[]',  label: '소화 불편 부위', chips: true },
+      { k: 'dg[]',  label: '소화 증상', chips: true },
+    ]},
+    { title: '대변', keys: [
+      { k: 'bwD',  label: '대변 주기 (일)' },
+      { k: 'bwT',  label: '대변 횟수 (회)' },
+      { k: 'bs',   label: '대변 상태' },
+      { k: 'bw[]', label: '대변 관련 증상', chips: true },
+    ]},
+    { title: '소변', keys: [
+      { k: 'urD',  label: '낮 소변 (회)' },
+      { k: 'urN',  label: '야간 소변 (회)' },
+      { k: 'ur[]', label: '소변 증상', chips: true },
+    ]},
+    { title: '추위/더위', keys: [
+      { k: 'tp',   label: '체감 온도' },
+      { k: 'cl[]', label: '추위 관련 증상', chips: true },
+      { k: 'ht[]', label: '더위 관련 증상', chips: true },
+    ]},
+    { title: '땀/부종/음수', keys: [
+      { k: 'swAmt', label: '땀의 양' },
+      { k: 'sa[]',  label: '땀 많은 부위', chips: true },
+      { k: 'se[]',  label: '땀·부종 증상', chips: true },
+      { k: 'water', label: '하루 음수량 (L)' },
+      { k: 'wt[]',  label: '음수 증상', chips: true },
+      { k: 'wtT',   label: '선호 물 온도' },
+    ]},
+    { title: '흉부/두면', keys: [
+      { k: 'ch[]',     label: '흉부 증상', chips: true },
+      { k: 'hd[]',     label: '두면 증상', chips: true },
+      { k: 'dizzyWhen',label: '어지럼 시기' },
+    ]},
+    { title: '전신/감기·비염', keys: [
+      { k: 'pe[]', label: '성격', chips: true },
+      { k: 'st',   label: '체력' },
+      { k: 'bd[]', label: '전신 증상', chips: true },
+      { k: 'cs[]', label: '감기 증상', chips: true },
+      { k: 'cf[]', label: '감기·비염', chips: true },
+      { k: 'rh[]', label: '비염 증상', chips: true },
+      { k: 'rt',   label: '비염 발생 시기' },
+    ]},
+    { title: '부녀 (여성 건강)', keys: [
+      { k: 'mc',  label: '생리 주기 (일)' },
+      { k: 'md',  label: '생리 기간 (일)' },
+      { k: 'mp',  label: '생리통' },
+      { k: 'mr',  label: '주기 규칙성' },
+      { k: 'mf',  label: '생리량' },
+      { k: 'mb',  label: '생리혈' },
+    ]},
+    { title: '기호 (생활 습관)', keys: [
+      { k: 'alcF', label: '음주 횟수/주' },
+      { k: 'alcA', label: '음주량' },
+      { k: 'smk',  label: '흡연 (갑/일)' },
+      { k: 'ar[]', label: '음주 반응', chips: true },
+    ]},
+    { title: '추가 정보', keys: [
+      { k: 'worse',  label: '몸 상태 나쁠 때 증상' },
+      { k: 'factor', label: '컨디션 좌우 요소' },
+      { k: 'extra',  label: '특이 증상·메모' },
+    ]},
+  ];
+
+  /* ── Render summary ── */
+  function finish() {
+    const d = collect();
+    let html = '';
+
+    SECTIONS.forEach(sec => {
+      const filled = sec.keys.filter(({ k }) => {
+        const v = d[k];
+        return v != null && (Array.isArray(v) ? v.length > 0 : v.toString().trim() !== '');
+      });
+      if (!filled.length) return;
+
+      html += `<div class="res-sec">`;
+      html += `<div class="res-sec-title">${sec.title}</div>`;
+      filled.forEach(({ k, label, chips }) => {
+        const v = d[k];
+        if (Array.isArray(v)) {
+          html += `<p style="font-size:12px;color:var(--muted);margin:6px 0 4px">${label}</p>`;
+          html += `<div class="res-chips">` + v.map(x => `<span class="res-chip">${x}</span>`).join('') + `</div>`;
+        } else {
+          html += `<div class="res-kv"><span class="res-kv-key">${label}</span><div class="res-kv-val">${v}</div></div>`;
+        }
+      });
+      html += `</div>`;
+    });
+
+    if (!html) html = '<p style="text-align:center;color:var(--muted);padding:24px">작성된 내용이 없습니다.</p>';
+
+    document.getElementById('summary').innerHTML = html;
+    document.querySelectorAll('.s-card').forEach(c => c.classList.remove('active'));
+    const rc = document.getElementById('resultCard');
+    rc.classList.add('active');
+    document.getElementById('progressFill').style.width = '100%';
+    document.getElementById('stepBadge').textContent = '완료';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  updateProgress();
+  /* 첫 화면도 초기화 */
+  requestAnimationFrame(() => requestAnimationFrame(adaptGrids));
+  /* 화면 회전 / 리사이즈 대응 */
+  window.addEventListener('resize', () => requestAnimationFrame(adaptGrids));
+
+  /* ── Swipe gesture (left = next, right = prev) ── */
+  (function () {
+    let sx = 0, sy = 0;
+    document.addEventListener('touchstart', e => {
+      sx = e.touches[0].clientX;
+      sy = e.touches[0].clientY;
+    }, { passive: true });
+    document.addEventListener('touchend', e => {
+      const dx = e.changedTouches[0].clientX - sx;
+      const dy = e.changedTouches[0].clientY - sy;
+      /* Only horizontal swipes > 60px that aren't mostly vertical */
+      if (Math.abs(dx) < 60 || Math.abs(dy) > Math.abs(dx) * 0.8) return;
+      /* Don't trigger on the result screen */
+      if (document.getElementById('resultCard').classList.contains('active')) return;
+      if (dx < 0 && cur < TOTAL) go(cur + 1);
+      else if (dx > 0 && cur > 1) go(cur - 1);
+    }, { passive: true });
+  })();
+
+</script>
+</body>
+</html>
