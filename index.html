@@ -424,7 +424,7 @@
     .step-dot {
       width: 8px; height: 8px; border-radius: 4px;
       background: var(--border); flex-shrink: 0;
-      transition: width .25s, background .25s; cursor: pointer;
+      transition: width .25s, background .25s; cursor: default;
     }
     .step-dot.active { background: var(--green); width: 22px; }
     .step-dot.done   { background: var(--green-light); }
@@ -1296,7 +1296,7 @@
     el.innerHTML = Array.from({ length: TOTAL }, (_, i) => {
       const n = i + 1;
       const cls = n === cur ? 'active' : n < cur ? 'done' : '';
-      return `<span class="step-dot ${cls}" onclick="go(${n})" title="${n}단계"></span>`;
+      return `<span class="step-dot ${cls}"></span>`;
     }).join('');
     /* Auto-scroll dots so active dot is visible */
     const active = el.querySelector('.step-dot.active');
@@ -1483,12 +1483,14 @@
     13: [],
   };
 
-  function isFilled(name) {
-    const els = document.querySelectorAll(`[name="${name}"]`);
-    if (!els.length) return true;
-    if (els[0].type === 'radio' || els[0].type === 'checkbox')
-      return !!document.querySelector(`[name="${name}"]:checked`);
-    return els[0].value.trim() !== '';
+  function isFilled(fieldName) {
+    const radios = document.querySelectorAll(`input[type="radio"][name="${fieldName}"]`);
+    if (radios.length) return Array.from(radios).some(r => r.checked);
+    const el = document.querySelector(
+      `input[name="${fieldName}"]:not([type="radio"]):not([type="checkbox"]), textarea[name="${fieldName}"]`
+    );
+    if (!el) return true;
+    return el.value.trim() !== '';
   }
 
   let _toastTimer;
@@ -1502,19 +1504,22 @@
 
   function tryGo(target) {
     document.querySelectorAll('.req-error').forEach(el => el.classList.remove('req-error'));
-    const missing = (REQUIRED[cur] || []).filter(n => !isFilled(n));
-    if (missing.length) {
-      missing.forEach(name => {
-        const el = document.querySelector(`.s-card.active [name="${name}"]`);
-        const container = el?.closest('.fg') || el?.closest('.col');
+    const requiredFields = REQUIRED[cur] || [];
+    const missing = requiredFields.filter(f => !isFilled(f));
+    if (missing.length > 0) {
+      missing.forEach(fieldName => {
+        const el = document.querySelector(`.s-card.active [name="${fieldName}"]`);
+        if (!el) return;
+        const container = el.closest('.fg') || el.closest('.col');
         if (container) container.classList.add('req-error');
       });
-      const first = document.querySelector('.s-card.active .req-error');
-      if (first) first.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      const firstErr = document.querySelector('.s-card.active .req-error');
+      if (firstErr) firstErr.scrollIntoView({ behavior: 'smooth', block: 'center' });
       showToast('필수 항목을 모두 선택해주세요');
-      return;
+      return false;
     }
     go(target);
+    return true;
   }
 
 </script>
