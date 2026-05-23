@@ -1486,9 +1486,11 @@
     const card = document.getElementById('resultCard');
     const nav  = card.querySelector('.nav');
     nav.style.display = 'none';
+    card.style.animation = 'none';
+    card.style.opacity   = '1';
     try {
       const canvas = await html2canvas(card, {
-        scale: 2,
+        scale: 3,
         useCORS: true,
         backgroundColor: '#ffffff',
         logging: false,
@@ -1503,13 +1505,15 @@
       slices.forEach((sl, i) => {
         const sc    = sliceCanvas(canvas, sl.top, sl.bottom);
         const slHmm = (sc.height / pxPerMm);
-        const dataUrl = sc.toDataURL('image/jpeg', 0.92);
+        const dataUrl = sc.toDataURL('image/png');
         if (i > 0) pdf.addPage();
-        pdf.addImage(dataUrl, 'JPEG', 0, 0, pageW, slHmm, '', 'NONE');
+        pdf.addImage(dataUrl, 'PNG', 0, 0, pageW, slHmm, '', 'FAST');
       });
       return pdf;
     } finally {
       nav.style.display = '';
+      card.style.animation = '';
+      card.style.opacity   = '';
     }
   }
 
