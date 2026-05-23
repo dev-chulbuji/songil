@@ -26,7 +26,7 @@
       --shadow-btn:  0 4px 14px rgba(43,110,68,.25);
     }
 
-    html { overflow-x: hidden; }
+    html { overflow-x: hidden; touch-action: pan-y; }
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo',
                    'Malgun Gothic', 'Noto Sans KR', sans-serif;
@@ -147,7 +147,7 @@
       padding: 12px 14px;
       border: 1.5px solid var(--border);
       border-radius: var(--radius-sm);
-      font-size: 15px; font-family: inherit;
+      font-size: 16px; font-family: inherit;
       color: var(--text); background: var(--white);
       outline: none; transition: border-color .18s, box-shadow .18s;
       -webkit-appearance: none; appearance: none;
@@ -165,7 +165,7 @@
       padding: 9px 10px;
       border: 1.5px solid var(--border);
       border-radius: 8px;
-      font-size: 15px; font-family: inherit;
+      font-size: 16px; font-family: inherit;
       text-align: center; outline: none;
       transition: border-color .18s, box-shadow .18s;
     }
@@ -1487,6 +1487,15 @@
     document.getElementById('stepBadge').textContent = '완료';
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
+
+  /* iOS: 키보드 dismiss 후 가로 스크롤 리셋 */
+  document.addEventListener('focusout', () => {
+    setTimeout(() => {
+      document.documentElement.scrollLeft = 0;
+      document.body.scrollLeft = 0;
+      if (window.scrollX > 0) window.scrollTo(0, window.scrollY);
+    }, 150);
+  });
 
   /* 내원일자 오늘 날짜 기본값 */
   const vd = document.querySelector('input[name=visitDate]');
