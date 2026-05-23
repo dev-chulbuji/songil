@@ -353,6 +353,9 @@
       line-height: 1.5; white-space: pre-wrap;
     }
 
+    /* ── PDF capture: nav hidden state ── */
+    .pdf-capturing .result-card { box-shadow: none; }
+
     /* ── Required field error state ── */
     .req-error {
       border-left: 3px solid var(--red);
@@ -519,6 +522,13 @@
           <div class="ci"><input type="radio" id="gM" name="gender" value="남"><label for="gM">남</label></div>
           <div class="ci"><input type="radio" id="gF" name="gender" value="여"><label for="gF">여</label></div>
         </div>
+      </div>
+    </div>
+
+    <div class="row" style="margin-bottom:14px">
+      <div class="col">
+        <label>연락처</label>
+        <input type="tel" name="phone" class="fi" placeholder="010-0000-0000">
       </div>
     </div>
 
@@ -1330,6 +1340,7 @@
       { k: 'visitDate', label: '내원일자' },
       { k: 'chartNo',   label: '차트번호' },
       { k: 'name',      label: '성함' },
+      { k: 'phone',     label: '연락처' },
       { k: 'gender',    label: '성별' },
       { k: 'birthDate', label: '생년월일' },
       { k: 'height',    label: '신장 (cm)' },
@@ -1411,44 +1422,97 @@
     ]},
   ];
 
-  /* ── KakaoTalk share ── */
-  async function shareResult() {
-    const d = collect();
-    let text = '📋 손길한의원 한약 문진표\n';
-    text += '─'.repeat(24) + '\n';
-
-    SECTIONS.forEach(sec => {
-      const filled = sec.keys.filter(({ k }) => {
-        const v = d[k];
-        return v != null && (Array.isArray(v) ? v.length > 0 : String(v).trim() !== '');
-      });
-      if (!filled.length) return;
-      text += `\n【${sec.title}】\n`;
-      filled.forEach(({ k, label }) => {
-        const v = d[k];
-        text += `• ${label}: ${Array.isArray(v) ? v.join(', ') : v}\n`;
-      });
+  /* ── PDF share ── */
+  function loadScript(src) {
+    return new Promise((resolve, reject) => {
+      if (document.querySelector(`script[src="${src}"]`)) { resolve(); return; }
+      const s = document.createElement('script');
+      s.src = src; s.onload = resolve; s.onerror = reject;
+      document.head.appendChild(s);
     });
+  }
 
-    if (navigator.share) {
-      try {
-        await navigator.share({ title: '손길한의원 한약 문진표', text });
-      } catch (e) {
-        if (e.name !== 'AbortError') copyFallback(text);
+  async function loadLibs() {
+    await loadScript('https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js');
+    await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js');
+  }
+
+  async function buildPDF() {
+    const card = document.getElementById('resultCard');
+    const nav  = card.querySelector('.nav');
+    nav.style.display = 'none';
+    try {
+      const canvas = await html2canvas(card, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: '#ffffff',
+        logging: false,
+      });
+      const { jsPDF } = window.jspdf;
+      const pdf    = new jsPDF({ orientation: 'p', unit: 'mm', format: 'a4' });
+      const pageW  = 210, pageH = 297;
+      const imgW   = pageW;
+      const imgH   = (canvas.height * imgW) / canvas.width;
+      let   pos    = 0;
+      pdf.addImage(canvas, 'PNG', 0, pos, imgW, imgH);
+      let remaining = imgH - pageH;
+      while (remaining > 0) {
+        pos -= pageH;
+        pdf.addPage();
+        pdf.addImage(canvas, 'PNG', 0, pos, imgW, imgH);
+        remaining -= pageH;
       }
-    } else {
-      copyFallback(text);
+      return pdf;
+    } finally {
+      nav.style.display = '';
     }
   }
 
-  function copyFallback(text) {
-    if (navigator.clipboard) {
-      navigator.clipboard.writeText(text)
-        .then(() => showToast('문진표 내용이 클립보드에 복사됐습니다'))
-        .catch(() => showToast('공유가 지원되지 않는 환경입니다'));
-    } else {
-      showToast('공유가 지원되지 않는 환경입니다');
+  function pdfFilename(d) {
+    const name  = (d.name  || '환자').replace(/\s/g, '');
+    const phone = (d.phone || '').replace(/\D/g, '');
+    const last4 = phone.length >= 4 ? phone.slice(-4) : phone.padEnd(4, '0');
+    return `${name}_${last4}_문진표.pdf`;
+  }
+
+  async function shareResult() {
+    const d   = collect();
+    const btn = document.querySelector('.btn-share');
+    btn.textContent = 'PDF 생성 중…';
+    btn.disabled = true;
+    try {
+      await loadLibs();
+      const pdf      = await buildPDF();
+      const filename = pdfFilename(d);
+      const blob     = pdf.output('blob');
+      const file     = new File([blob], filename, { type: 'application/pdf' });
+
+      if (navigator.canShare?.({ files: [file] })) {
+        await navigator.share({ files: [file], title: filename });
+      } else if (navigator.share) {
+        await navigator.share({ title: '손길한의원 한약 문진표', url: location.href });
+      } else {
+        downloadBlob(blob, filename);
+        showToast('PDF가 다운로드됐습니다');
+      }
+    } catch (e) {
+      if (e?.name !== 'AbortError') {
+        showToast('오류가 발생했습니다. 다시 시도해주세요');
+        console.error(e);
+      }
+    } finally {
+      btn.textContent = '카카오톡으로 공유';
+      btn.disabled = false;
     }
+  }
+
+  function downloadBlob(blob, filename) {
+    const url = URL.createObjectURL(blob);
+    const a = Object.assign(document.createElement('a'), { href: url, download: filename });
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
   }
 
   /* ── Render summary ── */
