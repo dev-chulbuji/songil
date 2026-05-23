@@ -297,11 +297,11 @@
       box-shadow: var(--shadow-btn);
       transform: translateY(-1px);
     }
-    .btn-print {
+    .btn-share {
       flex: 1; justify-content: center;
-      background: #1565C0; color: white;
+      background: #FAE100; color: #3A1D1D;
     }
-    .btn-print:hover { background: #0D47A1; }
+    .btn-share:hover { background: #F5D800; }
     .btn-edit {
       background: white; border: 1.5px solid var(--border); color: var(--muted);
     }
@@ -382,14 +382,6 @@
     }
     #toast.show { opacity: 1; }
 
-    /* ── Print ── */
-    @media print {
-      body { background: white; padding: 0; }
-      .site-header, .nav, .btn { display: none !important; }
-      .result-card { box-shadow: none; padding: 0; }
-      .result-card.active { display: block !important; }
-      * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-    }
 
     /* ── Responsive ── */
     @media (max-width: 480px) {
@@ -1216,12 +1208,12 @@
     <div class="res-top">
       <div class="res-circle">✓</div>
       <div class="res-title">문진표 작성 완료</div>
-      <div class="res-sub">작성하신 내용을 확인하고 인쇄하거나 저장해주세요<br>정직한 진료로 따뜻한 손길이 되어 드리겠습니다</div>
+      <div class="res-sub">작성하신 내용을 카카오톡으로 공유해주세요<br>정직한 진료로 따뜻한 손길이 되어 드리겠습니다</div>
     </div>
     <div id="summary"></div>
     <div class="nav" style="flex-wrap:wrap">
       <button class="btn btn-edit" onclick="go(1)">← 처음으로</button>
-      <button class="btn btn-print" onclick="window.print()">🖨️ 인쇄하기</button>
+      <button class="btn btn-share" onclick="shareResult()">카카오톡으로 공유</button>
     </div>
   </div>
 
@@ -1418,6 +1410,46 @@
       { k: 'extra',  label: '특이 증상·메모' },
     ]},
   ];
+
+  /* ── KakaoTalk share ── */
+  async function shareResult() {
+    const d = collect();
+    let text = '📋 손길한의원 한약 문진표\n';
+    text += '─'.repeat(24) + '\n';
+
+    SECTIONS.forEach(sec => {
+      const filled = sec.keys.filter(({ k }) => {
+        const v = d[k];
+        return v != null && (Array.isArray(v) ? v.length > 0 : String(v).trim() !== '');
+      });
+      if (!filled.length) return;
+      text += `\n【${sec.title}】\n`;
+      filled.forEach(({ k, label }) => {
+        const v = d[k];
+        text += `• ${label}: ${Array.isArray(v) ? v.join(', ') : v}\n`;
+      });
+    });
+
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: '손길한의원 한약 문진표', text });
+      } catch (e) {
+        if (e.name !== 'AbortError') copyFallback(text);
+      }
+    } else {
+      copyFallback(text);
+    }
+  }
+
+  function copyFallback(text) {
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(text)
+        .then(() => showToast('문진표 내용이 클립보드에 복사됐습니다'))
+        .catch(() => showToast('공유가 지원되지 않는 환경입니다'));
+    } else {
+      showToast('공유가 지원되지 않는 환경입니다');
+    }
+  }
 
   /* ── Render summary ── */
   function finish() {
