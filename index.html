@@ -1488,7 +1488,7 @@
     nav.style.display = 'none';
     try {
       const canvas = await html2canvas(card, {
-        scale: 1.5,
+        scale: 2,
         useCORS: true,
         backgroundColor: '#ffffff',
         logging: false,
@@ -1503,8 +1503,9 @@
       slices.forEach((sl, i) => {
         const sc    = sliceCanvas(canvas, sl.top, sl.bottom);
         const slHmm = (sc.height / pxPerMm);
+        const dataUrl = sc.toDataURL('image/jpeg', 0.92);
         if (i > 0) pdf.addPage();
-        pdf.addImage(sc, 'JPEG', 0, 0, pageW, slHmm, '', 'FAST');
+        pdf.addImage(dataUrl, 'JPEG', 0, 0, pageW, slHmm, '', 'NONE');
       });
       return pdf;
     } finally {
