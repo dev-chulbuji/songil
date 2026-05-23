@@ -353,8 +353,14 @@
       line-height: 1.5; white-space: pre-wrap;
     }
 
-    /* ── PDF capture: nav hidden state ── */
+    /* ── PDF capture ── */
     .pdf-capturing .result-card { box-shadow: none; }
+    .pdf-capturing, .pdf-capturing * {
+      animation: none !important;
+      transition: none !important;
+      opacity: 1 !important;
+      transform: none !important;
+    }
 
     /* ── Required field error state ── */
     .req-error {
@@ -1485,10 +1491,11 @@
   async function buildPDF() {
     const card = document.getElementById('resultCard');
     const nav  = card.querySelector('.nav');
+    const html = document.documentElement;
     nav.style.display = 'none';
-    card.style.animation = 'none';
-    card.style.opacity   = '1';
+    html.classList.add('pdf-capturing');
     try {
+      await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
       const canvas = await html2canvas(card, {
         scale: 3,
         useCORS: true,
@@ -1512,8 +1519,7 @@
       return pdf;
     } finally {
       nav.style.display = '';
-      card.style.animation = '';
-      card.style.opacity   = '';
+      html.classList.remove('pdf-capturing');
     }
   }
 
