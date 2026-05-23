@@ -1316,7 +1316,7 @@
   /* ── Collect form data ── */
   function collect() {
     const d = {};
-    document.querySelectorAll('input[type=text], input[type=date], input[type=number], textarea').forEach(el => {
+    document.querySelectorAll('input[type=text], input[type=tel], input[type=date], input[type=number], textarea').forEach(el => {
       if (el.name && el.value.trim()) d[el.name] = el.value.trim();
     });
     document.querySelectorAll('input[type=radio]:checked').forEach(el => {
@@ -1498,7 +1498,7 @@
       if (navigator.share) {
         /* Pass files array; older iOS that doesn't support files will throw,
            which we catch and fall back to download */
-        await navigator.share({ files: [file], title: filename });
+        await navigator.share({ files: [file] });
       } else {
         downloadBlob(blob, filename);
         showToast(`${filename} 저장됐습니다`);
