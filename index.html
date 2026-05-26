@@ -1236,12 +1236,12 @@
     <div class="res-top">
       <div class="res-circle">✓</div>
       <div class="res-title">문진표 작성 완료</div>
-      <div class="res-sub">작성하신 내용을 카카오톡으로 공유해주세요<br>정직한 진료로 따뜻한 손길이 되어 드리겠습니다</div>
+      <div class="res-sub">PDF를 저장 후 카카오톡 채널 채팅창에서 파일을 첨부해 전송해주세요<br>정직한 진료로 따뜻한 손길이 되어 드리겠습니다</div>
     </div>
     <div id="summary"></div>
     <div class="nav" style="flex-wrap:wrap">
       <button class="btn btn-edit" onclick="go(1)">← 처음으로</button>
-      <button class="btn btn-share" onclick="shareResult()">카카오톡으로 공유</button>
+      <button class="btn btn-share" onclick="shareResult()">카카오톡 채널로 전송</button>
     </div>
   </div>
 
@@ -1543,44 +1543,36 @@
     return `${name}_${last4}_문진표.pdf`;
   }
 
-  async function shareResult() {
+  const KAKAO_CHANNEL_CHAT = 'https://pf.kakao.com/_kkxbxgxj/chat';
+
+  function shareResult() {
     const btn = document.querySelector('.btn-share');
     btn.disabled = true;
 
-    try {
-      /* Use pre-generated PDF if ready; otherwise generate on-demand */
-      if (!_pdfCache) {
-        btn.textContent = 'PDF 생성 중…';
-        await loadLibs();
-        const d  = collect();
-        const pdf = await buildPDF();
-        _pdfCache = { blob: pdf.output('blob'), filename: pdfFilename(d) };
-      }
-
+    function doShare() {
       const { blob, filename } = _pdfCache;
-      const file = new File([blob], filename, { type: 'application/pdf' });
-
-      if (navigator.share) {
-        /* Pass files array; older iOS that doesn't support files will throw,
-           which we catch and fall back to download */
-        await navigator.share({ files: [file] });
-      } else {
-        downloadBlob(blob, filename);
-        showToast(`${filename} 저장됐습니다`);
-      }
-    } catch (e) {
-      if (e?.name === 'AbortError') return; /* user cancelled — do nothing */
-      /* share not supported or failed → download */
-      if (_pdfCache) {
-        downloadBlob(_pdfCache.blob, _pdfCache.filename);
-        showToast(`${_pdfCache.filename} 저장됐습니다`);
-      } else {
-        showToast('PDF 생성 중 오류가 발생했습니다');
-        console.error(e);
-      }
-    } finally {
-      btn.textContent = '카카오톡으로 공유';
+      downloadBlob(blob, filename);
+      window.open(KAKAO_CHANNEL_CHAT, '_blank');
+      showToast('PDF가 저장됐습니다. 채팅창에서 파일을 첨부해 전송해주세요 📎');
+      btn.textContent = '카카오톡 채널로 전송';
       btn.disabled = false;
+    }
+
+    if (_pdfCache) {
+      doShare();
+    } else {
+      btn.textContent = 'PDF 생성 중…';
+      loadLibs()
+        .then(() => buildPDF())
+        .then(pdf => {
+          _pdfCache = { blob: pdf.output('blob'), filename: pdfFilename(collect()) };
+          doShare();
+        })
+        .catch(() => {
+          showToast('PDF 생성 중 오류가 발생했습니다');
+          btn.textContent = '카카오톡 채널로 전송';
+          btn.disabled = false;
+        });
     }
   }
 
