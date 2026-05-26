@@ -504,19 +504,6 @@
       </div>
     </div>
 
-    <div class="row">
-      <div class="col" style="flex:2">
-        <label>내원일자</label>
-        <input type="date" name="visitDate" class="fi">
-      </div>
-      <div class="col">
-        <label>차트번호</label>
-        <input type="text" name="chartNo" class="fi" placeholder="(선택)">
-      </div>
-    </div>
-
-    <div class="div"></div>
-
     <div class="row" style="margin-bottom:14px">
       <div class="col" style="flex:2">
         <label>성함</label>
@@ -535,6 +522,13 @@
       <div class="col">
         <label>연락처</label>
         <input type="tel" name="phone" class="fi" placeholder="010-0000-0000">
+      </div>
+    </div>
+
+    <div class="row" style="margin-bottom:14px">
+      <div class="col">
+        <label>주소 <small style="color:var(--muted);font-weight:400">(한약 배송을 위해 정확히 기입해주세요)</small></label>
+        <input type="text" name="address" class="fi" placeholder="도로명 주소를 입력해주세요">
       </div>
     </div>
 
@@ -566,10 +560,6 @@
           <input type="number" name="weight" class="fi" placeholder="65" min="20" max="200" style="flex:1;min-width:0;text-align:right">
           <span class="it" style="flex-shrink:0">kg</span>
         </div>
-      </div>
-      <div class="col">
-        <label>혈압 / 맥박</label>
-        <input type="text" name="bp" class="fi" placeholder="(선택)">
       </div>
     </div>
 
@@ -623,9 +613,10 @@
 
     <div class="fg">
       <label class="fg-label">전반적인 수면 상태</label>
-      <div class="cg cg-2">
-        <div class="ci"><input type="radio" id="sl1a" name="slG" value="걸핏하면 수면 불량 — 스트레스"><label for="sl1a">걸핏하면 수면상태가 좋지 않아서 스트레스를 받는다</label></div>
-        <div class="ci"><input type="radio" id="sl1b" name="slG" value="평소 수면 문제 없음"><label for="sl1b">평소 수면 문제로 크게 고민하지 않는다</label></div>
+      <div class="cg">
+        <div class="ci"><input type="radio" id="sl1a" name="slG" value="잠 드는게 힘들다 (1시간 이상 걸린다)"><label for="sl1a">잠 드는게 힘들다<br><small style="color:var(--muted)">(잠 드는데 1시간 이상 걸린다)</small></label></div>
+        <div class="ci"><input type="radio" id="sl1b" name="slG" value="수면 중 자주 깬다, 잠 귀가 밝다"><label for="sl1b">수면 중 자주 깬다, 잠 귀가 밝다</label></div>
+        <div class="ci"><input type="radio" id="sl1c" name="slG" value="평소 수면 문제로 크게 고민하지 않는다"><label for="sl1c">평소 수면 문제로 크게 고민하지 않는다</label></div>
       </div>
     </div>
 
@@ -719,12 +710,11 @@
 
     <div class="fg">
       <label class="fg-label">대변 횟수</label>
-      <div class="cg cg-3 no-icon">
-        <div class="ci"><input type="radio" id="bwf1" name="bwFreq" value="매일 2회 이상"><label for="bwf1">매일 2회 이상</label></div>
-        <div class="ci"><input type="radio" id="bwf2" name="bwFreq" value="매일 1회"><label for="bwf2">매일 1회</label></div>
-        <div class="ci"><input type="radio" id="bwf3" name="bwFreq" value="2일에 1회"><label for="bwf3">2일에 1회</label></div>
-        <div class="ci"><input type="radio" id="bwf4" name="bwFreq" value="3~4일에 1회"><label for="bwf4">3~4일에 1회</label></div>
-        <div class="ci"><input type="radio" id="bwf5" name="bwFreq" value="주 1~2회"><label for="bwf5">주 1~2회</label></div>
+      <div class="cg cg-2 no-icon">
+        <div class="ci"><input type="radio" id="bwf1" name="bwFreq" value="매일 3회 이상"><label for="bwf1">매일 3회 이상</label></div>
+        <div class="ci"><input type="radio" id="bwf2" name="bwFreq" value="매일 1-2회"><label for="bwf2">매일 1-2회</label></div>
+        <div class="ci"><input type="radio" id="bwf3" name="bwFreq" value="일주일에 2-3회"><label for="bwf3">일주일에 2-3회</label></div>
+        <div class="ci"><input type="radio" id="bwf4" name="bwFreq" value="주 1회 이하"><label for="bwf4">주 1회 이하</label></div>
       </div>
     </div>
 
@@ -740,7 +730,7 @@
     <div class="fg">
       <label class="fg-label">대변 관련 증상 (해당 항목 모두 선택)</label>
       <div class="cg">
-        <div class="ci"><input type="checkbox" id="bw1" name="bw[]" value="대변에 별 신경 쓰지 않는다"><label for="bw1">대변에 별 신경 쓰지 않는다</label></div>
+        <div class="ci"><input type="checkbox" id="bw1" name="bw[]" value="대변에 별 신경 쓰지 않는다 (시원하게 잘 본다)"><label for="bw1">대변에 별 신경 쓰지 않는다 <small style="color:var(--muted)">(시원하게 잘 본다)</small></label></div>
         <div class="ci"><input type="checkbox" id="bw2" name="bw[]" value="하루 대변 못 보면 아주 불편하다"><label for="bw2">하루 대변을 못 보면 아주 불편하다</label></div>
         <div class="ci"><input type="checkbox" id="bw3" name="bw[]" value="대변 후 잔변감 있다"><label for="bw3">대변을 본 후 잔변감이 있다</label></div>
         <div class="ci"><input type="checkbox" id="bw4" name="bw[]" value="평소 배에 가스가 많이 찬다"><label for="bw4">평소 배에 가스가 많이 찬다</label></div>
@@ -768,28 +758,26 @@
 
     <div class="fg">
       <label class="fg-label">낮 소변 횟수 <small style="color:var(--muted);font-weight:400">(정상 6~8회)</small></label>
-      <div class="cg cg-2 no-icon">
+      <div class="cg cg-3 no-icon">
         <div class="ci"><input type="radio" id="urd1" name="urD" value="5회 이하"><label for="urd1">5회 이하</label></div>
-        <div class="ci"><input type="radio" id="urd2" name="urD" value="6~8회"><label for="urd2">6~8회</label></div>
-        <div class="ci"><input type="radio" id="urd3" name="urD" value="9~11회"><label for="urd3">9~11회</label></div>
-        <div class="ci"><input type="radio" id="urd4" name="urD" value="12회 이상"><label for="urd4">12회 이상</label></div>
+        <div class="ci"><input type="radio" id="urd2" name="urD" value="6~9회"><label for="urd2">6~9회</label></div>
+        <div class="ci"><input type="radio" id="urd3" name="urD" value="10회 이상"><label for="urd3">10회 이상</label></div>
       </div>
     </div>
 
     <div class="fg">
       <label class="fg-label">밤에 깨서 화장실 가는 횟수</label>
-      <div class="cg cg-2 no-icon">
+      <div class="cg cg-3 no-icon">
         <div class="ci"><input type="radio" id="urn0" name="urN" value="없음"><label for="urn0">없음</label></div>
-        <div class="ci"><input type="radio" id="urn1" name="urN" value="1회"><label for="urn1">1회</label></div>
-        <div class="ci"><input type="radio" id="urn2" name="urN" value="2회"><label for="urn2">2회</label></div>
-        <div class="ci"><input type="radio" id="urn3" name="urN" value="3회 이상"><label for="urn3">3회 이상</label></div>
+        <div class="ci"><input type="radio" id="urn1" name="urN" value="1-2회"><label for="urn1">1-2회</label></div>
+        <div class="ci"><input type="radio" id="urn2" name="urN" value="3회 이상"><label for="urn2">3회 이상</label></div>
       </div>
     </div>
 
     <div class="fg">
       <label class="fg-label">소변 관련 증상 (해당 항목 모두 선택)</label>
       <div class="cg">
-        <div class="ci"><input type="checkbox" id="ur1" name="ur[]" value="소변에 아무 불편함 없다"><label for="ur1">소변에 아무 불편함이 없다</label></div>
+        <div class="ci"><input type="checkbox" id="ur1" name="ur[]" value="소변에 아무 불편함 없다 (시원하게 잘 본다)"><label for="ur1">소변에 아무 불편함이 없다 <small style="color:var(--muted)">(시원하게 잘 본다)</small></label></div>
         <div class="ci"><input type="checkbox" id="ur2" name="ur[]" value="소변 후 잔뇨감·찝찝함"><label for="ur2">소변 후 잔뇨감이 있고 찝찝하다</label></div>
         <div class="ci"><input type="checkbox" id="ur3" name="ur[]" value="소변이 잘 안 나와서 힘을 줘야 한다"><label for="ur3">소변이 잘 안 나와서 힘을 줘야 한다</label></div>
         <div class="ci"><input type="checkbox" id="ur4" name="ur[]" value="방광염이 자주 생긴다"><label for="ur4">방광염이 자주 생긴다</label></div>
@@ -894,12 +882,11 @@
 
     <div class="fg">
       <label class="fg-label">하루 음수량 <small style="color:var(--muted);font-weight:400">(물 + 음료 + 커피 합계)</small></label>
-      <div class="cg cg-3 no-icon">
-        <div class="ci"><input type="radio" id="wta" name="water" value="500mL 미만"><label for="wta">500mL 미만</label></div>
-        <div class="ci"><input type="radio" id="wtb" name="water" value="500mL~1L"><label for="wtb">500mL~1L</label></div>
-        <div class="ci"><input type="radio" id="wtc" name="water" value="1~1.5L"><label for="wtc">1~1.5L</label></div>
-        <div class="ci"><input type="radio" id="wtd" name="water" value="1.5~2L"><label for="wtd">1.5~2L</label></div>
-        <div class="ci"><input type="radio" id="wte" name="water" value="2L 이상"><label for="wte">2L 이상</label></div>
+      <div class="cg cg-2 no-icon">
+        <div class="ci"><input type="radio" id="wta" name="water" value="거의 안마신다"><label for="wta">거의 안마신다</label></div>
+        <div class="ci"><input type="radio" id="wtb" name="water" value="약 500mL"><label for="wtb">약 500mL</label></div>
+        <div class="ci"><input type="radio" id="wtc" name="water" value="약 1L"><label for="wtc">약 1L</label></div>
+        <div class="ci"><input type="radio" id="wtd" name="water" value="2L 이상"><label for="wtd">2L 이상</label></div>
       </div>
     </div>
 
@@ -977,7 +964,7 @@
     <div class="s-head">
       <div class="s-icon">🤧</div>
       <div>
-        <div class="s-title">전신 / 감기·비염</div>
+        <div class="s-title">성격 / 전신 증상</div>
         <div class="s-sub">해당하는 항목을 모두 선택해주세요</div>
       </div>
     </div>
@@ -991,6 +978,8 @@
         <div class="ci"><input type="checkbox" id="pe4" name="pe[]" value="차분하다"><label for="pe4">차분하다</label></div>
         <div class="ci"><input type="checkbox" id="pe5" name="pe[]" value="우울하다"><label for="pe5">우울하다</label></div>
         <div class="ci"><input type="checkbox" id="pe6" name="pe[]" value="걱정이 많다"><label for="pe6">걱정이 많다</label></div>
+        <div class="ci"><input type="checkbox" id="pe7" name="pe[]" value="예민하다"><label for="pe7">예민하다</label></div>
+        <div class="ci"><input type="checkbox" id="pe8" name="pe[]" value="긴장을 많이 한다"><label for="pe8">긴장을 많이 한다</label></div>
       </div>
     </div>
 
@@ -1000,6 +989,9 @@
         <div class="ci"><input type="radio" id="st1" name="st" value="체력이 좋은 편"><label for="st1">좋은 편</label></div>
         <div class="ci"><input type="radio" id="st2" name="st" value="체력이 보통"><label for="st2">보통</label></div>
         <div class="ci"><input type="radio" id="st3" name="st" value="체력이 나쁜 편"><label for="st3">나쁜 편</label></div>
+      </div>
+      <div class="cg" style="margin-top:8px">
+        <div class="ci"><input type="checkbox" id="stSleep" name="stSleep" value="주말에 잠을 몰아서 잔다"><label for="stSleep">주말에 잠을 몰아서 잔다</label></div>
       </div>
     </div>
 
@@ -1023,13 +1015,13 @@
         <div class="ci"><input type="checkbox" id="cs3" name="cs[]" value="몸살감기"><label for="cs3">몸살감기</label></div>
         <div class="ci"><input type="checkbox" id="cs4" name="cs[]" value="코감기"><label for="cs4">코감기</label></div>
         <div class="ci"><input type="checkbox" id="cs5" name="cs[]" value="기침감기"><label for="cs5">기침감기</label></div>
+        <div class="ci"><input type="checkbox" id="cs6" name="cs[]" value="감기가 오면 목부터 온다"><label for="cs6">감기가 오면 목부터 온다</label></div>
       </div>
     </div>
 
     <div class="fg">
-      <label class="fg-label">기타 감기·비염 (해당 항목 선택)</label>
+      <label class="fg-label">비염</label>
       <div class="cg">
-        <div class="ci"><input type="checkbox" id="cf1" name="cf[]" value="감기가 오면 목부터 온다"><label for="cf1">감기가 오면 목부터 온다</label></div>
         <div class="ci" id="rhinItem">
           <input type="checkbox" id="cf2" name="cf[]" value="비염이 있다">
           <label for="cf2">비염이 있다</label>
@@ -1045,14 +1037,28 @@
             <div class="ci"><input type="checkbox" id="rh3" name="rh[]" value="코 막힘"><label for="rh3">코 막힘</label></div>
             <div class="ci"><input type="checkbox" id="rh4" name="rh[]" value="재채기"><label for="rh4">재채기</label></div>
             <div class="ci"><input type="checkbox" id="rh5" name="rh[]" value="가려움"><label for="rh5">가려움</label></div>
+            <div class="ci"><input type="checkbox" id="rh6" name="rh[]" value="흰색 가래"><label for="rh6">흰색 가래</label></div>
+            <div class="ci"><input type="checkbox" id="rh7" name="rh[]" value="누런색 가래"><label for="rh7">누런색 가래</label></div>
+          </div>
+        </div>
+        <div class="fg" style="margin-bottom:14px">
+          <label class="fg-label" style="font-size:13px">가장 불편한 증상 (한 가지 선택)</label>
+          <div class="cg cg-3">
+            <div class="ci"><input type="radio" id="rbw1" name="rbw" value="맑은 콧물"><label for="rbw1">맑은 콧물</label></div>
+            <div class="ci"><input type="radio" id="rbw2" name="rbw" value="누런 콧물"><label for="rbw2">누런 콧물</label></div>
+            <div class="ci"><input type="radio" id="rbw3" name="rbw" value="코 막힘"><label for="rbw3">코 막힘</label></div>
+            <div class="ci"><input type="radio" id="rbw4" name="rbw" value="재채기"><label for="rbw4">재채기</label></div>
+            <div class="ci"><input type="radio" id="rbw5" name="rbw" value="가려움"><label for="rbw5">가려움</label></div>
+            <div class="ci"><input type="radio" id="rbw6" name="rbw" value="가래 (흰색)"><label for="rbw6">가래 (흰색)</label></div>
+            <div class="ci"><input type="radio" id="rbw7" name="rbw" value="가래 (누런색)"><label for="rbw7">가래 (누런색)</label></div>
           </div>
         </div>
         <div class="fg" style="margin-bottom:0">
           <label class="fg-label" style="font-size:13px">비염 발생 시기</label>
-          <div class="cg cg-2">
-            <div class="ci"><input type="radio" id="rt1" name="rt" value="환절기에만"><label for="rt1">환절기에만</label></div>
+          <div class="cg">
+            <div class="ci"><input type="radio" id="rt1" name="rt" value="환절기/꽃가루철에만"><label for="rt1">환절기/꽃가루철에만</label></div>
             <div class="ci"><input type="radio" id="rt2" name="rt" value="사계절 내내"><label for="rt2">사계절 내내</label></div>
-            <div class="ci"><input type="radio" id="rt3" name="rt" value="온도에 따라 달라진다"><label for="rt3">온도에 따라 달라진다</label></div>
+            <div class="ci"><input type="radio" id="rt3" name="rt" value="온도에 따라 달라진다"><label for="rt3">온도에 따라 달라진다<br><small style="color:var(--muted)">(찬바람을 쐬면 심해지고, 따뜻한 곳에 가면 덜해진다)</small></label></div>
             <div class="ci"><input type="radio" id="rt4" name="rt" value="온도에 영향 받지 않는다"><label for="rt4">온도에 영향 받지 않는다</label></div>
           </div>
         </div>
@@ -1155,8 +1161,14 @@
       </div>
       <label class="fg-label" style="font-size:13px;margin-bottom:6px;display:block">음주량 (마시는 경우)</label>
       <div class="cg cg-2">
-        <div class="ci"><input type="radio" id="al1" name="alcA" value="많이 마신다"><label for="al1">많이 마신다</label></div>
-        <div class="ci"><input type="radio" id="al2" name="alcA" value="조금 마신다"><label for="al2">조금 마신다</label></div>
+        <div class="ci" style="grid-column:1/-1;display:flex;align-items:center;gap:8px;flex-wrap:nowrap">
+          <input type="radio" id="al1" name="alcA" value="많이 마신다" style="flex-shrink:0">
+          <label for="al1" style="flex-shrink:0;margin:0">많이 마신다</label>
+          <span style="flex-shrink:0;color:var(--muted)">(</span>
+          <input type="text" name="alcAmt" class="fi" placeholder="소주 2병" style="flex:1;min-width:60px;max-width:130px;font-size:15px;padding:5px 8px">
+          <span style="flex-shrink:0;color:var(--muted)">)</span>
+        </div>
+        <div class="ci"><input type="radio" id="al2" name="alcA" value="가끔 마신다"><label for="al2">가끔 마신다</label></div>
       </div>
     </div>
 
@@ -1343,15 +1355,13 @@
   /* ── Section schema ── */
   const SECTIONS = [
     { title: '기본 정보', keys: [
-      { k: 'visitDate', label: '내원일자' },
-      { k: 'chartNo',   label: '차트번호' },
       { k: 'name',      label: '성함' },
-      { k: 'phone',     label: '연락처' },
       { k: 'gender',    label: '성별' },
+      { k: 'phone',     label: '연락처' },
+      { k: 'address',   label: '주소' },
       { k: 'birthDate', label: '생년월일' },
       { k: 'height',    label: '신장 (cm)' },
       { k: 'weight',    label: '체중 (kg)' },
-      { k: 'bp',        label: '혈압/맥박' },
     ]},
     { title: '주요 증상', keys: [
       { k: 'sx1',   label: '주증상 ①' },
@@ -1398,14 +1408,16 @@
       { k: 'hd[]',     label: '두면 증상', chips: true },
       { k: 'dizzyWhen',label: '어지럼 시기' },
     ]},
-    { title: '전신/감기·비염', keys: [
-      { k: 'pe[]', label: '성격', chips: true },
-      { k: 'st',   label: '체력' },
-      { k: 'bd[]', label: '전신 증상', chips: true },
-      { k: 'cs[]', label: '감기 증상', chips: true },
-      { k: 'cf[]', label: '감기·비염', chips: true },
-      { k: 'rh[]', label: '비염 증상', chips: true },
-      { k: 'rt',   label: '비염 발생 시기' },
+    { title: '성격 / 전신 증상', keys: [
+      { k: 'pe[]',   label: '성격', chips: true },
+      { k: 'st',     label: '체력' },
+      { k: 'stSleep',label: '수면 패턴' },
+      { k: 'bd[]',   label: '전신 증상', chips: true },
+      { k: 'cs[]',   label: '감기 증상', chips: true },
+      { k: 'cf[]',   label: '비염', chips: true },
+      { k: 'rh[]',   label: '비염 증상', chips: true },
+      { k: 'rbw',    label: '가장 불편한 비염 증상' },
+      { k: 'rt',     label: '비염 발생 시기' },
     ]},
     { title: '부녀 (여성 건강)', keys: [
       { k: 'mc',  label: '생리 주기' },
@@ -1417,7 +1429,8 @@
     ]},
     { title: '기호 (생활 습관)', keys: [
       { k: 'alcF', label: '음주 빈도' },
-      { k: 'alcA', label: '음주량' },
+      { k: 'alcA',   label: '음주량' },
+      { k: 'alcAmt', label: '음주량 상세' },
       { k: 'smk',  label: '흡연' },
       { k: 'ar[]', label: '음주 반응', chips: true },
     ]},
@@ -1634,10 +1647,6 @@
       if (window.scrollX > 0) window.scrollTo(0, window.scrollY);
     }, 150);
   });
-
-  /* 내원일자 오늘 날짜 기본값 */
-  const vd = document.querySelector('input[name=visitDate]');
-  if (vd && !vd.value) vd.valueAsDate = new Date();
 
   updateProgress();
   /* 첫 화면도 초기화 */
