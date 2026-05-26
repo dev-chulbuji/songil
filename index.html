@@ -1504,17 +1504,17 @@
         removeContainer: true,
       });
       const { jsPDF } = window.jspdf;
-      const pageW   = 210, pageH = 297;
-      const pxPerMm = canvas.width / pageW;
-      const pageHpx = Math.round(pageH * pxPerMm);
-      const slices  = makeSlices(canvas, pageHpx);
-      const pdf     = new jsPDF({ orientation: 'p', unit: 'mm', format: 'a4' });
+      const pageW    = 210, pageH = 297;
+      const pxPerMm  = canvas.width / pageW;
+      const pageHpx  = Math.round(pageH * pxPerMm);
+      const slices   = makeSlices(canvas, pageHpx);
+      const totalH   = canvas.height / pxPerMm;
+      const dataUrl  = canvas.toDataURL('image/jpeg', 0.95);
+      const pdf      = new jsPDF({ orientation: 'p', unit: 'mm', format: 'a4' });
       slices.forEach((sl, i) => {
-        const sc    = sliceCanvas(canvas, sl.top, sl.bottom);
-        const slHmm = (sc.height / pxPerMm);
-        const dataUrl = sc.toDataURL('image/png');
+        const yMm = sl.top / pxPerMm;
         if (i > 0) pdf.addPage();
-        pdf.addImage(dataUrl, 'PNG', 0, 0, pageW, slHmm, '', 'FAST');
+        pdf.addImage(dataUrl, 'JPEG', 0, -yMm, pageW, totalH, 'c', 'FAST');
       });
       return pdf;
     } finally {
