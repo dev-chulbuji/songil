@@ -1096,18 +1096,40 @@
     </div>
 
     <div class="fg">
-      <label class="fg-label">생리통</label>
+      <label class="fg-label">생리 전후 나타나는 증상 <small style="color:var(--muted);font-weight:400">(해당 항목 모두 선택)</small></label>
       <div class="cg cg-2">
-        <div class="ci"><input type="radio" id="mp1" name="mp" value="생리통 보통"><label for="mp1">보통이다</label></div>
-        <div class="ci"><input type="radio" id="mp2" name="mp" value="생리통 심하다"><label for="mp2">심하다</label></div>
+        <div class="ci"><input type="checkbox" id="ms1" name="ms[]" value="두통"><label for="ms1">두통</label></div>
+        <div class="ci"><input type="checkbox" id="ms2" name="ms[]" value="요통"><label for="ms2">요통</label></div>
+        <div class="ci"><input type="checkbox" id="ms3" name="ms[]" value="몸살·피로감"><label for="ms3">몸살·피로감</label></div>
+        <div class="ci"><input type="checkbox" id="ms4" name="ms[]" value="설사"><label for="ms4">설사</label></div>
+        <div class="ci"><input type="checkbox" id="ms5" name="ms[]" value="변비"><label for="ms5">변비</label></div>
+        <div class="ci"><input type="checkbox" id="ms6" name="ms[]" value="소화불량"><label for="ms6">소화불량</label></div>
+        <div class="ci"><input type="checkbox" id="ms7" name="ms[]" value="메슥거림"><label for="ms7">메슥거림</label></div>
+      </div>
+    </div>
+
+    <div class="fg">
+      <label class="fg-label">생리통</label>
+      <div class="cg cg-3">
+        <div class="ci"><input type="radio" id="mp0" name="mp" value="생리통 없음" onchange="document.getElementById('mpDetail').style.display='none'"><label for="mp0">없는 편</label></div>
+        <div class="ci"><input type="radio" id="mp1" name="mp" value="생리통 보통" onchange="document.getElementById('mpDetail').style.display='none'"><label for="mp1">보통이다</label></div>
+        <div class="ci"><input type="radio" id="mp2" name="mp" value="생리통 심하다" onchange="document.getElementById('mpDetail').style.display=''"><label for="mp2">심하다</label></div>
+      </div>
+      <div id="mpDetail" style="display:none;margin-top:10px">
+        <label class="fg-label" style="font-size:13px;color:var(--muted)">심한 부위 <small>(해당 항목 모두 선택)</small></label>
+        <div class="cg cg-2">
+          <div class="ci"><input type="checkbox" id="mpd1" name="mpd[]" value="요통"><label for="mpd1">요통</label></div>
+          <div class="ci"><input type="checkbox" id="mpd2" name="mpd[]" value="복통"><label for="mpd2">복통</label></div>
+        </div>
       </div>
     </div>
 
     <div class="fg">
       <label class="fg-label">생리 주기 규칙성</label>
-      <div class="cg cg-2">
+      <div class="cg" style="grid-template-columns:1fr">
         <div class="ci"><input type="radio" id="mr1" name="mr" value="생리 주기 규칙적"><label for="mr1">규칙적이다</label></div>
         <div class="ci"><input type="radio" id="mr2" name="mr" value="생리 주기 불규칙적"><label for="mr2">불규칙적이다</label></div>
+        <div class="ci"><input type="radio" id="mr3" name="mr" value="몇달씩 건너 뛸 때도 있다"><label for="mr3">몇달씩 건너 뛸 때도 있다</label></div>
       </div>
     </div>
 
@@ -1414,12 +1436,14 @@
       { k: 'rt',     label: '비염 발생 시기' },
     ]},
     { title: '부녀 (여성 건강)', keys: [
-      { k: 'mc',  label: '생리 주기' },
-      { k: 'md',  label: '생리 기간' },
-      { k: 'mp',  label: '생리통' },
-      { k: 'mr',  label: '주기 규칙성' },
-      { k: 'mf',  label: '생리량' },
-      { k: 'mb',  label: '생리혈' },
+      { k: 'mc',   label: '생리 주기' },
+      { k: 'md',   label: '생리 기간' },
+      { k: 'ms[]', label: '생리 전후 증상', chips: true },
+      { k: 'mp',   label: '생리통' },
+      { k: 'mpd[]',label: '생리통 부위', chips: true },
+      { k: 'mr',   label: '주기 규칙성' },
+      { k: 'mf',   label: '생리량' },
+      { k: 'mb',   label: '생리혈' },
     ]},
     { title: '기호 (생활 습관)', keys: [
       { k: 'alcF', label: '음주 빈도' },
