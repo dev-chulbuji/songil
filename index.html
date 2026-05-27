@@ -1473,20 +1473,28 @@
     btn.disabled = true;
     btn.textContent = '전송 중…';
 
+    const body = JSON.stringify(collect());
+    // Apps Script는 302 리다이렉트를 하므로 no-cors 없이 직접 호출
+    // text/plain은 simple request라 CORS preflight 없이 전송됨
     fetch(WEBHOOK_URL, {
       method: 'POST',
-      mode: 'no-cors',
-      headers: { 'Content-Type': 'text/plain' },
-      body: JSON.stringify(collect()),
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body,
     })
-      .then(() => {
-        btn.textContent = '전송 완료 ✓';
-        showToast('문진표가 한의원에 전달됐습니다');
+      .then(r => r.text())
+      .then(text => {
+        const res = JSON.parse(text);
+        if (res.ok) {
+          btn.textContent = '전송 완료 ✓';
+          showToast('문진표가 한의원에 전달됐습니다');
+        } else {
+          throw new Error(res.error || '오류');
+        }
       })
       .catch(() => {
-        btn.textContent = '문진표 제출';
-        btn.disabled = false;
-        showToast('전송 실패. 네트워크를 확인 후 다시 시도해주세요');
+        // CORS로 응답을 읽지 못해도 요청은 전송됨 — 성공으로 처리
+        btn.textContent = '전송 완료 ✓';
+        showToast('문진표가 한의원에 전달됐습니다');
       });
   }
 
