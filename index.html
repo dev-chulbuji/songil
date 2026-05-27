@@ -1252,12 +1252,12 @@
     <div class="res-top">
       <div class="res-circle">✓</div>
       <div class="res-title">문진표 작성 완료</div>
-      <div class="res-sub">아래 버튼을 누르면 문진 결과가 자동으로 복사됩니다<br>카카오톡 채팅창에 붙여넣기 후 전송해주세요</div>
+      <div class="res-sub">아래 버튼을 눌러 문진표를 한의원으로 전송해주세요<br>정직한 진료로 따뜻한 손길이 되어 드리겠습니다</div>
     </div>
     <div id="summary"></div>
     <div class="nav" style="flex-wrap:wrap">
       <button class="btn btn-edit" onclick="go(1)">← 처음으로</button>
-      <button class="btn btn-share" onclick="shareResult()">카카오톡 채널로 전송</button>
+      <button class="btn btn-share" onclick="submitForm()">문진표 제출</button>
     </div>
   </div>
 
@@ -1459,40 +1459,35 @@
     ]},
   ];
 
-  /* ── PDF share ── */
+  /* ── Google Sheets 제출 ── */
 
-  const KAKAO_CHANNEL_CHAT = 'https://pf.kakao.com/_kkxbxgxj/chat';
+  // Apps Script 배포 후 아래 URL을 교체하세요
+  const WEBHOOK_URL = '';
 
-  function buildShareText() {
-    const d = collect();
-    const lines = ['[손길한의원 문진표]', ''];
-    SECTIONS.forEach(sec => {
-      const filled = sec.keys.filter(({ k }) => {
-        const key = k.replace('[]', '');
-        const v = d[key];
-        return v != null && (Array.isArray(v) ? v.length > 0 : v.toString().trim() !== '');
-      });
-      if (!filled.length) return;
-      lines.push(`■ ${sec.title}`);
-      filled.forEach(({ k, label }) => {
-        const key = k.replace('[]', '');
-        const v = d[key];
-        lines.push(`${label}: ${Array.isArray(v) ? v.join(', ') : v}`);
-      });
-      lines.push('');
-    });
-    return lines.join('\n').trim();
-  }
-
-  function shareResult() {
+  function submitForm() {
+    if (!WEBHOOK_URL) {
+      showToast('웹훅 URL이 설정되지 않았습니다');
+      return;
+    }
     const btn = document.querySelector('.btn-share');
     btn.disabled = true;
-    // window.open은 사용자 제스처 내에서 동기적으로 호출해야 팝업 차단 방지
-    window.open(KAKAO_CHANNEL_CHAT, '_blank');
-    navigator.clipboard.writeText(buildShareText())
-      .then(() => showToast('문진 결과가 복사됐습니다.\n채팅창에 붙여넣기 후 전송해주세요 📋'))
-      .catch(() => showToast('카카오톡 채널이 열렸습니다.\n문진 결과를 채팅창에 직접 입력해주세요'))
-      .finally(() => { btn.disabled = false; });
+    btn.textContent = '전송 중…';
+
+    fetch(WEBHOOK_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify(collect()),
+    })
+      .then(() => {
+        btn.textContent = '전송 완료 ✓';
+        showToast('문진표가 한의원에 전달됐습니다');
+      })
+      .catch(() => {
+        btn.textContent = '문진표 제출';
+        btn.disabled = false;
+        showToast('전송 실패. 네트워크를 확인 후 다시 시도해주세요');
+      });
   }
 
   /* ── Render summary ── */
